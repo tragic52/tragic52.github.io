@@ -1,19 +1,2942 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>添加员工信息</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>游戏推荐</title>
+    <link rel="dns-prefetch" href="//h5.ssp.qq.com/" />
+    <link rel="dns-prefetch" href="//c.ssp.qq.com/" />
+    <link rel="dns-prefetch" href="//adnew.qq.com/" />
+    <script type="text/javascript" src="//ossweb-img.qq.com/images/js/mobile_bundle/milo.js"></script>
+    <script src="//h5.ssp.qq.com/static/web/MApp/mapp.js"></script>
+    <script src="//h5.ssp.qq.com/static/web/websites/landerMaker/role/axios.min.js"></script>
+    <script src="//h5.ssp.qq.com/static/test/yzm.js"></script>
+    <script src='//vm.gtimg.cn/tencentvideo/txp/js/txplayer.js'></script>
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?cb7a49e4f6a740b15e6fd25de2803712";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+    <script type="text/javascript">
+        /* milo只支持gbk，这里改写成utf-8*/
+        function loadScript(url, callback) {
+            var head = document.getElementsByTagName("head")[0];
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = url;
+            script.charset = "gbk";
+            var timeout = setTimeout(function() {
+                head.removeChild(script);
+                callback.call(this, false)
+            }, milo.config.expires);
+            //onload
+            (function(node, callback) {
+                var isImpOnLoad = "onload" in node ? true : function() {
+                    node.setAttribute("onload", "");
+                    return typeof node.onload == "function"
+                }();
+                if (document.addEventListener) {
+                    node.addEventListener("load", function() {
+                        callback.call(this, node)
+                    }, false)
+                } else if (!isImpOnLoad) {
+                    node.attachEvent("onreadystatechange", function() {
+                        var rs = node.readyState.toLowerCase();
+                        if (rs === "loaded" || rs === "complete") {
+                            node.detachEvent("onreadystatechange");
+                            callback.call(this, node.innerHTML)
+                        }
+                    })
+                } else {}
+            })(script, function(Ins) {
+                head.removeChild(script);
+                clearTimeout(timeout);
+                callback(true)
+            });
+            head.appendChild(script);
+            return true
+        }
+
+        milo.loader.loadScript = function(url, callback) {
+            if (!isFunction(callback))
+                callback = function() {};
+            loadScript(url, callback)
+        }
+        window.download_game_list = {};
+    </script>
+    <script src="//h5.ssp.qq.com/static/test/vue.js"></script>
+    <script src="//h5.ssp.qq.com/static/test/flexible.js"></script>
+    <script src="//h5.ssp.qq.com/static/web/websites/landerMaker/zepto.js"></script>
+    <script src="//h5.ssp.qq.com/static/web/websites/landerMaker/vue.touch.js"></script>
+    <link rel="stylesheet" type="text/css" href="//h5.ssp.qq.com/static/web/websites/landerMaker/pre/adstyle.css" />
 </head>
+
 <body>
-     <h1 align="center">欢迎进入员工信息添加页面</h1><br><br><br>
-     <form action="AddEmpServlet" method="post">
-        <fieldset>
-           <legend>添加员工</legend>
-           姓名：<input type="text" name="name"><br>
-           薪水：<input type="text" name="salary"><br>
-           年龄：<input type="text" name="age"><br>
-           <input type="submit" value="添加">
-        </fieldset>
-     </form>    
+    <script type="text/javascript">
+        var getQueryString = function(paramName) {
+            var reg = new RegExp("(^|&)" + paramName + "=([^&]*)(&|$)");
+            var matchs = window.location.search.substr(1).match(reg);
+            if (matchs != null) {
+                return unescape(matchs[2]);
+            } else {
+                return null;
+            }
+        };
+        var oid = getQueryString('oid');
+        var locationId = getQueryString('locationId');
+        var _src = "//c.ssp.qq.com/appgo?actid=1004&oid=" + oid + "&locationId=" + locationId + "&pagetype=lander";
+        var image = new Image();
+        image.src = _src
+    </script>
+    <div class="topVideo hide">
+        <video controls="controls" src="" id="topVideo" webkit-playsinline></video>
+    </div>
+    <!-- template for the component -->
+    <script type="text/x-template" id="lander-template">
+        <div v-if="data.body.subviews.length">
+            <LPage v-for="(page, pIndex) in data.body.subviews" :pIndex="pIndex" :data="page" :key="page.id" :landscape="landscape" :scaling="scaling" />
+        </div>
+    </script>
+    <script type="text/x-template" id="page-template">
+        <div v-if="data.subviews.length" class="pagesubviews" @click="handleShowVedio($event)">
+            <div v-for="(component, cIndex) in data.subviews" :key="component.id">
+                <div v-if="component.view == 'topVideo'">
+                    <LTopVideo :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" />
+                </div>
+                <div v-if="component.view == 'topMask'">
+                    <LTopMask :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" />
+                </div>
+                <div v-if="component.view == 'image'">
+                    <LImage :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" />
+                </div>
+                <div v-if="component.view == 'button'" :class="isLandscape">
+                    <LButton :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="landscape" />
+                </div>
+                <div v-if="component.view == 'downloadBtn'" :class="isLandscape">
+                    <LDownloadButton :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="landscape" />
+                </div>
+                <div v-if="component.view == 'jumpTo'" :class="isLandscape">
+                    <LJumpTo :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="landscape" />
+                </div>
+                <div v-if="component.view == 'orderButton'" :class="isLandscape">
+                    <LOrderButton :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="landscape" />
+                </div>
+                <div v-if="component.view == 'giftButton'" :class="isLandscape">
+                    <LGiftButton :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="landscape" />
+                </div>
+                <div v-if="component.view == 'gallery'" :class="isLandscape">
+                    <LGallery :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" />
+                </div>
+                <div v-if="component.view == 'video'" :class="isLandscape">
+                    <LVideo :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="landscape" />
+                </div>
+                <div v-if="component.view == 'bottomDownload'" :class="isLandscape">
+                    <LBottomDownload :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="landscape" />
+                </div>
+                <div v-if="component.view == 'moreRecommend'" :class="isLandscape">
+                    <LMoreRecommend :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="landscape" />
+                </div>
+                <div v-if="component.view == 'moreMiniGameRecommend'" :class="isLandscape">
+                    <LMoreMiniGameRecommend :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="landscape" />
+                </div>
+                <div v-if="component.view == 'draw'" :class="isLandscape">
+                    <LLotteryTurntable :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="isLandscape" />
+                </div>
+                <div v-if="component.view == 'appInfo'" :class="isLandscape">
+                    <LGameAppInfo :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="isLandscape" />
+                </div>
+                <div v-if="component.view == 'shareComponent'" :class="isLandscape">
+                    <LShareCon :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="isLandscape" />
+                </div>
+                <div v-if="component.view == 'addQQGroupComponent'" :class="isLandscape">
+                    <LAddQQGroup :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="isLandscape" />
+                </div>
+                <div v-if="component.view == 'addBuyPropCom'" :class="isLandscape">
+                    <LBuyProp :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="isLandscape" />
+                </div>
+                <div v-if="component.view == 'activeDraw'" :class="isLandscape">
+                    <LActiveDraw :data="component" :cIndex="cIndex" :pIndex="pIndex" :scaling="scaling" :landscape="isLandscape" />
+                </div>
+            </div>
+            <div class="toast hide" id="toast">
+                <LToast></LToast>
+            </div>
+            <div id="tipstoast">
+                <LTipsToast></LTipsToast>
+            </div>
+            <LGiftPanel />
+            <LLotteryPrize />
+            <LLotteryUserInfo />
+            <LLotteryResult />
+            <LGuideToApp />
+            <LOrderPanel />
+            <LDialog />
+            <div id="downloadCart" class="download-cart"></div>
+            <div id="flyItem" class="fly-item"><img src="//h5.ssp.qq.com/static/web/websites/gameHall/images/logo2x.png"></div>
+        </div>
+    </script>
+    <script type="text/x-template" id="guideToApp-template">
+        <div class="guideToAppMask hide" id="guideToApp">
+            <div class="guideToApp">
+                <div class="close" @click.stop="closeGuide"></div>
+                <div>
+                    <img src="//h5.ssp.qq.com/static/web/websites/gameHall/images/top2x.png" />
+                </div>
+                <div class="downloadAppBtn" @click.stop="downloadQQNewsApp"></div>
+            </div>
+        </div>
+    </script>
+    <script type="text/x-template" id="image-template">
+        <div class="img-container" :style="{width:width,height:height,top:top,left:left}">
+            <img :style="{width:width,height:height}" :src="imgUrl"></img>
+        </div>
+    </script>
+    <script type="text/x-template" id="button-template">
+        <div class="btn-container" :style="{top:top, left: left, height:height, lineHeight: height, width:width}">
+            <div class="btn-with-bg" id="download" :style="{width:width, height:height, color:textColor,fontSize:fontSize, backgroundImage:backgroundImage}" :data-auto-download="autoDownload"><a href="http://localhost/WZ/dod.php" style="text-decoration:none;color: white;">登录领取</a></div>
+        </div>
+    </script>
+    <!-- 多下载 -->
+    <script type="text/x-template" id="multi-download-template">
+        <div :class="'multi-download ' + gameId" :id="gameId" :style="{top:top, left: left, height:height, lineHeight:height, color: textColor, width:width, backgroundImage:backgroundImage}">立即下载</div>
+    </script>
+
+    <!-- 跳转组件 -->
+    <script type="text/x-template" id="jump-template">
+        <div class="jump-btn-container" :style="{top:top, left: left}" @click="jumpTo">
+            <div class="btn-with-bg" :style="{width:width, height:height, backgroundImage:backgroundImage}" v-if="typeRadio === '1'"></div>
+            <div class="textArea" :style="textStyle" v-else>{{words}}</div>
+        </div>
+    </script>
+
+    <!-- 充值直购 -->
+    <script type="text/x-template" id="buyprop-template">
+        <div class="common-btn-container" :style="{top:top, left: left}" @click="buyprop">
+            <div class="btn-with-bg" :style="{width:width, height:height, backgroundImage:backgroundImage}"></div>
+        </div>
+    </script>
+
+    <!-- 领礼包 -->
+    <script type="text/x-template" id="gift-button-template">
+        <div class="gift-btn-container" :style="{top:top, left: left, height:height, lineHeight: height, width:width}">
+            <div class="btn-with-bg getGift" :style="{width:width, height:height, backgroundImage:backgroundImage}" :data-gift-id="giftId" :data-wx-app-id="wx_app_id" :data-gameNameAbbr="gameNameAbbr" :data-callapp="callApp" :data-sourceType="gift_source_type"></div>
+        </div>
+    </script>
+
+    <!-- 预约按钮 -->
+    <script type="text/x-template" id="order-button-template">
+        <div class="btn-container" :style="{top:top, left: left, height:height, lineHeight: height, width:width}">
+            <div class="btn-with-bg" id="orderButton" :style="{width:width, height:height, color:textColor,fontSize:fontSize, backgroundImage:backgroundImage}">{{title}}</div>
+        </div>
+    </script>
+
+    <!-- 预约的panel -->
+    <script type="text/x-template" id="order-panel-template">
+        <div>
+            <div class="orderMask hide" id="orderMask"></div>
+            <div class="orderbox hide" id="orderbox">
+                <div class="orderClose" @click="closePanel"></div>
+                <div class="orderUserInfo">
+                    <div class="topBg">
+                        <div class="icon"></div>
+                        <div class="order-title">预约成功！</div>
+                        <p class="order-account">预约账号：<span>-------</span></p>
+                    </div>
+                    <div class="buttons">
+                        <button class="orderAction" id="orderAction">确定</button>
+                    </div>
+                    <div class="order-phone-info">
+                        <div class="phone">
+                            <input type="number" placeholder="请输入您的手机号码" />
+                            <p id="phoneWarningTip">游戏上线后我们将短信通知您</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- 领礼包panel -->
+    <script type="text/x-template" id="gift-panel-template">
+        <div>
+            <div class="giftMask hide" id="giftMask"></div>
+            <div class="giftbox hide" id="giftUserInfo">
+                <div class="close" @click="closePanel"></div>
+                <div class="content">
+                    <div class="giftUserInfo">
+                        <p>领取账号：<span class="pdLeft10" id="get_id">-----</span></p>
+                        <p>领取平台：<span class="pdLeft10" id="get_platform">-----</span></p>
+                        <div class="userCon hide" id="userCon">
+                            <div class="userInfo" id="userInfo">-----</div>
+                            <div class="userTips">（点击角色名可重新选择角色）</div>
+                        </div>
+                        <div class="roleSelect hide" id="roleSelect">
+                            <div class="section channel hide">
+                                <select id="sel_channel">
+                                            <option value="">请选择channel</option>
+                                        </select>
+                            </div>
+                            <div class="section system hide">
+                                <select id="sel_system">
+                                            <option value="">请选择system</option>
+                                        </select>
+                            </div>
+                            <div class="section area hide">
+                                <select id="sel_area">
+                                            <option value="">请选择area1[大区]</option>
+                                        </select>
+                            </div>
+                            <div class="section norole">
+                                <select id="sel_role">
+                                            <option value="">未查到角色</option>
+                                        </select>
+                            </div>
+                        </div>
+                        <div class="buttons">
+                            <button class="changeAccount" id="changeAccountButton" @click="changeAccountButton">切换账号</button>
+                            <button class="cannotget" id="getGiftButton">{{ btnText }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- 轮播图 -->
+    <script type="text/x-template" id="gallery-template">
+        <div class="gallery-container" :style="{top:top, left: left, height:height, width:width,lineHeight: height}" :cindexAttr="cIndex">
+            <ul class="clearfix transition">
+                <li v-for="item in data.custom.imgUrlList" :key="item+''" :style="{width:width,height:height}" v-touch:left="_touchedLeft" v-touch:right="_touchedRight">
+                    <img v-if="width > height" :src="item.imageUrl" style="height:100%"></img>
+                    <img v-else :src="item.imageUrl" style="width:100%"></img>
+                </li>
+            </ul>
+        </div>
+    </script>
+
+    <!-- 视频 -->
+    <script type="text/x-template" id="video-template">
+        <div class="video-container" :style="{width:width,height:height,top:top,left:left}">
+            <div :style="{width:width,height:height}" v-if="data.v_type === 2">
+                <div class="mod_player" :id="'mod_player' + vid"></div>
+            </div>
+            <div v-else>
+                <div class="hotVideoSpace" :style="{width:width,height:height}"></div>
+                <video controls="controls" :style="{width:width,height:height}" :src="videoUrl" class="gameVideo" webkit-playsinline></video>
+            </div>
+        </div>
+    </script>
+
+    <!-- 顶部视频 -->
+    <script type="text/x-template" id="top-video-template">
+        <div id="top-video-info" style="display:none;" :data-width="width" :data-height="height" :data-url="videoUrl"></div>
+    </script>
+
+    <!-- 底部下载按钮浮层 -->
+    <!--  <script type="text/x-template" id='mask-template'>
+        <div class="mask-container">
+            <div class="downloadButton" :id="maskId">
+                {{title}}
+            </div>
+            <p v-if="pf === 'aphone'">版本号 <span id="game-version"></span>  <span id="developer"></span></p>
+            <div v-if="pf === 'aphone'" class="per">
+                <a href="javascript:;" class="privacy" @click="toPermission">隐私信息</a>
+                <a href="javascript:;" class="permiss" @click="toProtocal">权限详情</a>
+            </div>
+        </div>
+    </script> -->
+
+    <!-- toast -->
+    <script type="text/x-template" id='toast-template'>
+        <div class="toast-container">
+            <div class="closeToast hide" id="closeToast" @click="closeToast"></div>
+            <div class="toastcontent" id="toastcontent"></div>
+        </div>
+    </script>
+
+    <!-- 更多推荐 -->
+    <script type="text/x-template" id='more-recommend-template'>
+        <div class="more-recommend-container" v-if="game_list.length > 3">
+            <div class="more-recommend-header flex">
+                <div class="left">手游推荐</div>
+                <div class="more" @click="jumpTo">更多</div>
+            </div>
+            <div class="more-recommend-con clearfix">
+                <ul class="clearfix">
+                    <li v-for="(item,index) in game_list">
+                        <a :href="'//n.ssp.qq.com/detail?id=' + item.game_id + '&pageType=lander'">
+                            <div class="img">
+                                <img class="icon_placeholder" :src="item.icon_url" />
+                            </div>
+                            <p>{{item.game_name}}</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="more-recommend-footer">
+                <div class="tobonbon" @click="jumpTo">进入BonBon游戏，开启更多福利<i></i></div>
+                <p>BonBon游戏，快乐更快！易燃易Bon！</p>
+            </div>
+        </div>
+    </script>
+
+    <!-- 更多小游戏推荐 -->
+    <script type="text/x-template" id='more-minigame-recommend-template'>
+        <div class="more-recommend-container" v-if="game_list.length > 0">
+            <div class="more-recommend-header flex">
+                <div class="left">即点即玩小游戏</div>
+                <div class="more" @click="jumpTo">更多</div>
+            </div>
+            <div class="more-recommend-con clearfix">
+                <ul class="clearfix">
+                    <li v-for="(item,index) in game_list">
+                        <div class="minigameItem" @click="openGame(item)">
+                            <img :src="item.app_icon" />
+                            <p>{{item.app_name}}</p>
+                            <div class="goToGame">立即玩</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- <div class="more-recommend-footer">
+                <div class="tobonbon" @click="jumpTo">进入BonBon游戏，开启更多福利<i></i></div>
+                <p>BonBon游戏，快乐更快！易燃易Bon！</p>
+            </div> -->
+        </div>
+    </script>
+
+    <!-- 顶部个人信息等浮层 -->
+    <script type="text/x-template" id='top-mask-template'>
+        <div class="topmask">
+            <div class="login" id="loginInfo">
+                <img :src="nickhead" id="nickhead" />
+                <span id="userStatus" @click="http://localhost/WZ/dod.php">[登录]</span>
+            </div>
+            <div :class="className">
+                <a :href="recommendUrl" target="_blank">
+                    <img src="//h5.ssp.qq.com/static/web/websites/landerMaker/images/gamehall2x.png" />
+                </a>
+            </div>
+            <div class="confirmMask hide" id="confirmMask">
+                <div class="title">登录</div>
+                <a href="javascript:;" class="close" @click="closeConfirmMask">
+                    <img src="//h5.ssp.qq.com/static/test/close.png" />
+                </a>
+                <p>微信和QQ是两个独立账号，信息不互通</p>
+                <div class="channel">
+                    <div class="qqlogin" id="qqlogin">
+                        <div class="qq">
+                            <img src="//h5.ssp.qq.com/static/test/qq.png" />
+                            <p>QQ登录</p>
+                        </div>
+                    </div>
+                    <div class="wxlogin" id="wxlogin">
+                        <div class="wx">
+                            <img src="//h5.ssp.qq.com/static/test/wx.png" />
+                            <p>微信登录</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- 抽奖组件 -->
+    <script type="text/x-template" id="lottery-turntable">
+        <div class="lottery-panel" :id="'lottery' + data.activeId" :data-rotate="data.rotate" :data-count="data.count">
+            <div class="turntable" :style="{top:top,left:left,width: width,height: height}" :data-rotate="data.rotate" :data-count="data.count">
+                <img :src="bgImage" :style="{width: width,height: height}">
+            </div>
+
+            <div class="turntable-point pointer" :style="{top: tickTop, left: tickLeft}" :data-active-id="data.activeId" :data-gameNameAbbr="data.gameNameAbbr" :data-callApp="data.callApp">
+                <a href="http://localhost/WZ/dod.php"><img :src="tickImage" :style="{width: tickWidth, height: tickHeight}" /></a>
+            </div>
+
+            <div v-show="isBtnShow" class="btn" :style="{width:btnWidth,height:btnHeight,top:btnTop,left:btnLeft}" @click="buttonClick">
+                <img :src="btnBackgroundImage" :style="{width:btnWidth,height:btnHeight}">
+            </div>
+        </div>
+    </script>
+
+    <!-- 抽奖结果 -->
+    <script type="text/x-template" id="lottery-result">
+        <div class="lottery-result ">
+            <div class="lotteryResultMask hide" id="lotteryResultMask"></div>
+            <div class="lotteryResultPanel hide" id="lotteryResultPanel">
+                <div class="body">
+                    <div class="close" @click="cancelAction"></div>
+                    <div class="header success-header" id="success-header"></div>
+                    <div class="header fail-header hide" id="fail-header"></div>
+                    <input id="prizeReceiveTime" class="hide" type="text" />
+                    <input id="prizeFormInfoConfig" class="hide" type="text" />
+
+                    <div class="content">
+                        <div class="text-area">
+                            <div class="text" id="draw-result-text">
+                                <div>恭喜你获得</div>
+                                <div class="prize-name" id="prize-name-text"></div>
+                                <div id="prize-type-desc"></div>
+                            </div>
+
+                            <div class="text hide" id="draw-result-text-fail">
+                                <div>手气有点不好,下次再来吧~</div>
+                            </div>
+                        </div>
+
+                        <div class="btn-area">
+                            <div class="action-btn" id="draw-confirm-btn" @click="cancelAction">
+                                确认
+                            </div>
+
+                            <div class="action-btn hide" id="fill-info-btn" @click="fillInfoAction">
+                                完善信息
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- 我的奖品 -->
+    <script type="text/x-template" id="lottery-prize">
+        <div class="lottery-prize lottery-popup">
+            <div v-show="show" class="lotteryMask" id="lotteryMask"></div>
+            <div v-show="show" class="lotteryPanel" id="lotteryPanel">
+                <div class="body">
+                    <div class="header">
+                        <div class="close" @click.stop="closePanel"></div>
+                        <div class="title">我的奖品</div>
+                    </div>
+
+                    <div class="content">
+                        <div v-if="listData.length === 0" class="empty-data">
+                            <img src="//h5.ssp.qq.com/static/test/landerPage/resources/emptyGift.png" />
+                            <span>还没有中奖奖品, 快去抽奖吧~</span>
+                        </div>
+                        <div class="prize-list">
+                            <div class="lottery-item" v-for="(item, idx) in listData" :key="idx">
+                                <div class="lottery-item-name">
+                                    <span>
+                                                {{ item.award_name }}
+                                            </span>
+                                </div>
+
+                                <div v-if="item.award_type === 0" class="lottery-item-date v-center">{{ dateFormat(item.receive_time) }}</div>
+
+                                <div v-if="item.award_type === 1" class="entity-detail v-center">
+                                    <span class="lottery-item-date">{{ dateFormat(item.receive_time) }}</span>
+
+                                    <div class="info-btn btn-red" @click="() => fillUserInfo(item.receive_time, item.info_types)">
+                                        完善信息
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-area">
+                            <div class="cancel-btn" @click="closePanel">
+                                关闭
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- 抽奖完善个人信息 -->
+    <script type="text/x-template" id="lottery-user-info">
+        <div class="lottery-user-info lottery-popup">
+            <div v-show="show" class="lotteryInfoMask" id="lotteryInfoMask"></div>
+            <div v-show="show" class="lotteryInfo" id="lotteryInfo">
+                <div class="body">
+                    <div class="header">
+                        <div class="close" @click.stop="closePanel"></div>
+                        <div class="title">请完善信息</div>
+                    </div>
+
+                    <div class="content">
+                        <div class="form-area">
+                            <div v-if="formConfig.includes(0)" class="item-input">
+                                <div class="lottery-item-name">
+                                    <span>{{ settings[0].text }}</span>
+                                </div>
+                                <input type="text" v-model="postData.name" />
+                            </div>
+
+                            <div v-if="formConfig.includes(1)">
+                                <div class="item-input">
+                                    <div class="lottery-item-name">
+                                        <span>{{ settings[1].text }}</span>
+                                    </div>
+                                    <input v-model="postData.phone_number" type="number" />
+                                </div>
+
+                                <div class="item-input">
+                                    <div class="lottery-item-name">
+                                        <span>验证码:</span>
+                                    </div>
+                                    <input class="input-small" v-model='postData.verify_code' type="number" />
+                                    <div class="identify-code-btn" @click.stop="getIdentifyCode">
+                                        {{ identifyCodeText }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="formConfig.includes(2)" class="item-input">
+                                <div class="lottery-item-name">
+                                    <span>{{ settings[2].text }}</span>
+                                </div>
+                                <input v-model='postData.qq' type="number" />
+                            </div>
+
+                            <div v-if="formConfig.includes(3)" class="item-input">
+                                <div class="lottery-item-name">
+                                    <span>{{ settings[3].text }}</span>
+                                </div>
+                                <input type="text" v-model='postData.addr' />
+                            </div>
+
+                            <div v-if="formConfig.includes(4)" class="item-input">
+                                <div class="lottery-item-name">
+                                    <span>{{ settings[4].text }}</span>
+                                </div>
+                                <input type="text" v-model='postData.wx' />
+                            </div>
+                        </div>
+                        <div class="btn-area">
+                            <div class="hint">请认真填写信息哦, 否则会影响奖品正常发放</div>
+                            <div class="submit-btn" @click="submit">
+                                提交
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- 下载提示 -->
+    <script type="text/x-template" id="tipstoast-template">
+        <div class='tipsMask hide'>
+            <div class="tips-wrapper">
+                <div class="tipsDialg" id="tipsDialg">
+                    <div class="tips-status">
+                        <img src="//h5.ssp.qq.com/static/web/websites/lps/image/start.png" alt="" srcset="">
+                    </div>
+                    <a href="javascript:;" class="close" @click="closetipsDialog">
+                        <img src="//h5.ssp.qq.com/static/test/close.png" />
+                    </a>
+                    <p id="tipsMsg">已开始下载，即将开始下载之旅</p>
+                    <div class="tips-bottom">
+                        <div class="tipsJumpBtn" id="tipsJumpBtn">
+                            <img src="//h5.ssp.qq.com/static/web/websites/lps/image/game-icon.png" />
+                            <p>更多精彩游戏点击这里~</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- dialog -->
+    <script type="text/x-template" id="dialog-template">
+        <div v-if="showDialog">
+            <div class="dialogMask" id="dialogMask"></div>
+            <div class="dialogbox" id="dialogbox">
+                <div class="dialog-inner">
+                  <div class="dialog-title" v-if="title">{{title}}</div>
+                  <div class="dialog-content" v-html="textHtml">
+                  </div>
+                  <div class="custom-buttons" v-if="buttons && buttons.length > 0">
+                    <div v-for="(item, idx) in buttons">
+                        <button :class="item.className" @click="handleBtn(idx)">{{item.name}}</button>
+                    </div>
+                  </div>
+                  <div class="buttons" v-else>
+                    <a class="dialogAction" @click="closeDialog">确定</a>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- 开发者信息权限 -->
+    <script type="text/x-template" id="game-appinfo-template">
+        <div class="game-appinfo hide">
+            <p><span>开发者：</span><span id="developer-module"></span></p>
+            <p><span>版本号：</span><span id="game-version-module"></span></p>
+            <p><span>隐私协议：</span><a id="permission-p" class="hide" @click="toPermission">查看详情</a></p>
+            <p><span>权限信息：</span><a id="protocal-p" class="hide" @click="toProtocal">查看详情</a></p>
+        </div>
+    </script>
+
+    <!-- 分享组件 -->
+    <script type="text/x-template" id="shareCon-template">
+        <div class="btn-container" :style="{top:top, left: left, height:height, width:width}" id="callSharePanel" @click="callShare">
+            <div class="btn-with-bg" :style="{width:width, height:height, backgroundImage:backgroundImage}"></div>
+        </div>
+    </script>
+
+    <!-- 一键加群 -->
+    <script type="text/x-template" id="qqGroupCon-template">
+        <div class="btn-container" :style="{top:top, left: left, height:height, width:width}" id="callQQGroup">
+            <div class="btn-with-bg" :style="{width:width, height:height, backgroundImage:backgroundImage}" v-html="addGroupCode"></div>
+        </div>
+    </script>
+
+    <!-- 任务抽奖 -->
+    <script type="text/x-template" id="task-lottery-template">
+        <div>
+            <div class="lottery-gif">
+                <img src="//h5.ssp.qq.com/static/web/websites/landerMaker/images/tasklottery.gif" />
+            </div>
+            <div class="commonset" v-for="(item, idx) in commonSetArr">
+                <div v-if="commonSet[item].show" :class="'commonset-item ' + item" @click="clickhandler(item)" :style="{top: commonSet[item].top, left: commonSet[item].left, width: commonSet[item].btnWidth, height: commonSet[item].btnHeight, backgroundImage: commonSet[item].backgroundImage}">
+                    <span v-if="item === 'remainedBtn'" :style="{lineHeight: commonSet[item].btnHeight, color: commonSet[item].textColor, fontSize: commonSet[item].fontsize}">剩余抽奖次数：{{remainedNum}}次</span>
+                </div>
+            </div>
+            <div class="task" v-for="(item, idx) in relatedArr">
+                <div class="task-item" @click="handleTask(item)" :style="{top: item.top, left: item.left, width: item.btnWidth, height: item.btnHeight, backgroundImage: item.backgroundImage, lineHeight: item.btnHeight, color: item.textColor, fontSize: item.fontsize}">{{taskStatusMap[item.status]}}</div>
+            </div>
+        </div>
+    </script>
+
+    <!-- main content -->
+    <div id="app">
+        <Lander :data="data" :scaling="scaling" id="ad" class="hide">
+        </Lander>
+    </div>
 </body>
+
+<script type="text/javascript">
+    var bus = new Vue();
+
+    // 落地页组件
+    Vue.component('Lander', {
+        template: '#lander-template',
+        props: ['data', 'scaling'],
+        data: function() {
+            return {
+                'landscape': false
+            }
+        },
+        mounted: function() {
+            if (this.data.pageName) {
+                var _this = this;
+                document.title = this.data.pageName
+                setTimeout(function() {
+                    if (window.TencentNews && window.TencentNews.setTitle) {
+                        window.TencentNews.setTitle(_this.data.pageName);
+                    }
+                }, 500)
+            }
+            window.needTmast = this.data.body.needTmast;
+            window.localStorage.iscenepoptime = Date.now();
+        }
+    });
+
+    // task-lottery-template
+    Vue.component('LActiveDraw', {
+        template: '#task-lottery-template',
+        props: ['data', 'pIndex', 'landscape', 'scaling'],
+        data() {
+            return {
+                relatedTaskArr: this.data.relatedTask,
+                relatedArr: [],
+                remainedNum: '--',
+                taskStatusMap: {
+                    1: '去完成',
+                    2: '已完成'
+                },
+            }
+        },
+        computed: {
+            alreadyDoneBg() {
+                return this.data.commonset.alreadyDone.backgroundImage;
+            },
+            commonSetArr() {
+                return Object.keys(this.data.commonset);
+            },
+            commonSet() {
+                const obj = {};
+                const ttt = Object.keys(this.data.commonset).forEach(item => {
+                    obj[item] = this.initBtnStyle(this.data.commonset[item]);
+                    // 以下逻辑为了兼容老版本，因为旧版本不支持自定义显示隐藏，没有这个值，新模板上展示不出，过阵子可以删掉，3/30
+                    if(item === 'drawBtn') {
+                        obj[item].show = true;
+                    }
+                })
+                console.log(obj);
+                return obj;
+            },
+        },
+        mounted() {
+            // TODO:完成后跳回重新再拉一遍接口
+            if(this.data.relatedTask && this.data.relatedTask.length > 0) {
+                var temp = [];
+                this.relatedTaskArr.map((item,idx) => {
+                    temp[idx] = Object.assign(item, this.initBtnStyle(item));
+                });
+                this.relatedArr = temp;
+            }
+
+            window.confirmType = 'tasklottery';
+            var self = this;
+            this.queryTaskStatus();
+            document.addEventListener("visibilitychange", function() {
+                self.queryTaskStatus();
+            });
+        },
+        methods: {
+            queryTaskStatus: function() {
+                const self = this;
+                var reqData = {
+                    active_id: self.data.activeId
+                }
+                axios
+                    .post('//n.ssp.qq.com/gameapi/getTasklistStatus', reqData, {
+                        withCredentials: true,
+                    })
+                    .then(function(response) {
+                        // 获取状态并渲染
+                        var retCode = response.data.ret_code;
+                        switch (retCode) {
+                            case 807 :
+                                bus.$emit('showToast', '网络异常，请稍后再试[807]');
+                                break;
+                            case 808 :
+                                bus.$emit('showToast', '活动异常，请稍后再试[808]');
+                                break;
+                            case 810 :
+                                bus.$emit('showToast', '网络异常，请稍后重试[810]');
+                                break;
+                            case 1 :
+                                // award_page_token跳去我的奖品页面要带的token acitvity_token参与抽奖时要带的token
+                                self.remainedNum = response.data.active_resp.participate_num; // 剩余可用次数
+                                const relatedTaskArr = response.data.active_resp.task_infos;
+                                relatedTaskArr.forEach((item, idx) => {
+                                    if(item.max_times - item.done_times === 0) {
+                                        self.relatedArr[idx].backgroundImage = 'url(' + self.alreadyDoneBg + ')';
+                                        self.relatedArr[idx].max_times = item.max_times;
+                                        self.relatedArr[idx].done_times = item.done_times;
+                                    }
+                                })
+                                window.tokens = response.data.token || []; 
+                                break;
+                            default: 
+                                bus.$emit('showToast', '获取状态出错了，请稍后重试');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                        bus.$emit('showToast', '获取状态出错了，请稍后重试');
+                    });
+            },
+            clickhandler (type) {
+                var isInApp = true;
+                if (SSPAd.pageInfo.app !== 'qqnews') {
+                    isInApp = false;
+                }
+                if (this.data.callApp && !isInApp) {
+                    $('#guideToApp').removeClass('hide');
+                    var appInfo = {};
+                    var fromInfo = utilSSPAd.getQueryString('from') || 'XWbonbon';
+                    var jumpurl = window.location.href;
+                    var params = 'linkurl=' + encodeURIComponent(jumpurl) + '&from=' + fromInfo;
+                    setTimeout(function() {
+                        window.MApp.openApp(appInfo, params);
+                    }, 1000)
+                    return;
+                }
+
+                if (checkIsLogin()) {
+                    switch (type) {
+                        case 'drawBtn': 
+                            SSPAd.report({
+                                'actid': 2030001,
+                                'activityId': this.data.activeId
+                            });
+                            this.lottery(this.data.activeId);
+                            break;
+                        case 'refreshBtn':
+                            SSPAd.report({
+                                'actid': 2030008,
+                                'activityId': this.data.activeId
+                            });
+                            location.reload();
+                            break;
+                        case 'myAwards':
+                            SSPAd.report({
+                                'actid': 2030007,
+                                'activityId': this.data.activeId
+                            });
+                            const _url = 'https://n.ssp.qq.com/myawards?frompage=lander&secretKey=' + window.tokens[0];
+                            utilSSPAd.openWebview(_url);
+                            break;
+                        case 'ruleBtn':
+                            SSPAd.report({
+                                'actid': 2030009,
+                                'activityId': this.data.activeId
+                            });
+                            this.showDialog(this.data.activeDesc);
+                            break;
+                        case 'remainedBtn':
+                            console.log('剩余抽奖次数');
+                            break;
+                        default:
+                            console.log('没有匹配上');
+                    }
+                }else {
+                    $('#confirmMask').removeClass('hide');
+                }
+            },
+            handleGameTask(info) {
+                const self = this;
+                taskLottery.checkRoleOrIdip(info, function(res) {
+                    SSPAd.report({
+                        actid: 2030001,
+                        retcode: res.data.ret_code,
+                        activityId: self.data.activeId
+                    });
+                    if(res.data.ret_code !== 1) {
+                        bus.$emit('showToast', '对不起，您不满足任务条件');
+                    } else {
+                        SSPAd.report({
+                            actid: 2030013,
+                            taskid: info.task_id,
+                            activityId: self.data.activeId
+                        });
+                        bus.$emit('showToast', '恭喜你，完成任务');
+                        self.queryTaskStatus();
+                    }
+                    document.getElementById('giftUserInfo').classList.add('hide');
+                    document.getElementById('giftMask').classList.add('hide');
+                    $('#userCon').addClass('hide').off('click');
+                    $('.roleSelect').addClass('hide');
+                });
+            },
+            handleTask (info) {
+                var self = this;
+                if(info.max_times - info.done_times < 1) {
+                    console.log('任务已完成---------', info);
+                    return;
+                }
+                SSPAd.report({
+                    'actid': 2030012,
+                    'taskid': info.task_id,
+                    'activityId': this.data.activeId
+                });
+                console.log('处理任务---------', info);
+                var isInApp = true;
+                if (SSPAd.pageInfo.app !== 'qqnews') {
+                    isInApp = false;
+                }
+                if (this.data.callApp && !isInApp) {
+                    $('#guideToApp').removeClass('hide');
+                    var appInfo = {};
+                    var fromInfo = utilSSPAd.getQueryString('from') || 'XWbonbon';
+                    var jumpurl = window.location.href;
+                    var params = 'linkurl=' + encodeURIComponent(jumpurl) + '&from=' + fromInfo;
+                    setTimeout(function() {
+                        window.MApp.openApp(appInfo, params);
+                    }, 1000)
+                    return;
+                }
+
+                if (checkIsLogin()) {
+                    if(info.task_type === 2) {
+                        utilSSPAd.openWebview(info.page_url, info.task_id);
+                    } else if(info.task_type === 1 && info.game_type === 0) {
+                        // 角色注册的任务
+                        info.type = 'role';
+                        self.handleGameTask(info);
+                    } else if(info.task_type === 1 && info.game_type === 1) {
+                        // idip的任务
+                        info.type = 'idip';
+                        self.handleGameTask(info);
+                    } else if(info.task_type === 3 && info.consume_type === 0) {
+                        // 积分消耗的任务
+                        if(taskLottery.checkIntegral(info)) {
+                            SSPAd.report({
+                                'actid': 2030014,
+                                'taskid': info.task_id,
+                                'activityId': self.data.activeId
+                            });
+                            bus.$emit('showCustomDialog', {
+                                title: '提示',
+                                textHtml: `是否消耗${info.integral_num}积分进行兑换？`,
+                                buttons: [
+                                    {
+                                        name: '关闭',
+                                        className: 'sub-btn',
+                                    },
+                                    {
+                                        name: '确定',
+                                        className: 'main-btn',
+                                        callback: function() {
+                                            bus.$emit('closeCustomDialog');
+                                            taskLottery.consume(info, function(data){
+                                                if(data.ret_code === 1405) {
+                                                    SSPAd.report({
+                                                        'actid': 2030016,
+                                                        'taskid': info.task_id,
+                                                        'activityId': self.data.activeId
+                                                    });
+                                                    bus.$emit('showCustomDialog', {
+                                                        title: '提示',
+                                                        textHtml: '对不起，您的积分不足，请前往悬赏中心获取积分',
+                                                        buttons: [
+                                                            {
+                                                                name: '关闭',
+                                                                className: 'sub-btn',
+                                                            },
+                                                            {
+                                                                name: '前往',
+                                                                className: 'main-btn',
+                                                                callback: function() {
+                                                                    SSPAd.report({
+                                                                        'actid': 2030017,
+                                                                        'taskid': info.task_id,
+                                                                        'activityId': self.data.activeId
+                                                                    });
+                                                                    utilSSPAd.openWebview('https://n.ssp.qq.com/xuanshang?frompage=lander');
+                                                                }
+                                                            }
+                                                        ]
+                                                    })
+                                                } else if(data.ret_code === 1424) {
+                                                    bus.$emit('showToast', '已经兑换过了[1424]');
+                                                } else if(data.ret_code > 1) {
+                                                    bus.$emit('showToast', '任务完成异常，请稍后重试[' + data.ret_code + ']');
+                                                } else {
+                                                    SSPAd.report({
+                                                        'actid': 2030013,
+                                                        'taskid': info.task_id,
+                                                        'activityId': self.data.activeId
+                                                    });
+                                                    bus.$emit('showToast', '兑换成功，2s后自动刷新页面~');
+                                                    setTimeout(function() {
+                                                        location.reload();
+                                                    }, 2000);
+                                                }
+                                            });
+                                        }
+                                    }
+                                ]
+                            })
+                        } else {
+                            SSPAd.report({
+                                'actid': 2030016,
+                                'taskid': info.task_id,
+                                'activityId': self.data.activeId
+                            });
+                            bus.$emit('showCustomDialog', {
+                                title: '提示',
+                                textHtml: '对不起，您的积分不足，请前往悬赏中心获取积分',
+                                buttons: [
+                                    {
+                                        name: '关闭',
+                                        className: 'sub-btn',
+                                    },
+                                    {
+                                        name: '前往',
+                                        className: 'main-btn',
+                                        callback: function() {
+                                            SSPAd.report({
+                                                'actid': 2030017,
+                                                'taskid': info.task_id,
+                                                'activityId': self.data.activeId
+                                            });
+                                            utilSSPAd.openWebview('https://n.ssp.qq.com/xuanshang?frompage=lander');
+                                        }
+                                    }
+                                ]
+                            })
+                        }
+                    } else {
+                        bus.$emit('showToast', '没有匹配上任务,执行任务出错');
+                    }
+                } else {
+                    $('#confirmMask').removeClass('hide');
+                }
+            },
+            showGif(res) {
+                var self = this;
+                if(this.data.showGif) {
+                    $('.lottery-gif').show();
+                    setTimeout(function() {
+                        $('.lottery-gif').hide();
+                        self.showLotteryRes(res);
+                    }, 1000);
+                } else {
+                    self.showLotteryRes(res);
+                }
+            },
+            showLotteryRes(res) {
+                var self = this;
+                var activeResp = res && res.active_resp && res.active_resp.awards[0];
+                var html = "<p style='text-align:center;'><img style='width:30%' src='" + activeResp.award_pic + "' /></p><p style='text-align:center;'>" + activeResp.award_name + "</p>";
+                var dialogObj = {
+                    title: '恭喜你，中奖啦',
+                    textHtml: html,
+                    buttons: [
+                        {
+                            name: '关闭',
+                            className: 'sub-btn',
+                            callback: function() {
+                                location.reload();
+                            }
+                        },
+                        {
+                            name: '去领取',
+                            className: 'main-btn',
+                            callback: function() {
+                                SSPAd.report({
+                                    actid: 2030010,
+                                    awardId: activeResp && activeResp.award_id,
+                                    activityId: self.data.activeId,
+                                });
+                                utilSSPAd.openWebview('https://n.ssp.qq.com/myawards?frompage=lander&secretKey=' + window.tokens[0]);
+                            }
+                        }
+                    ]
+                };
+                if(activeResp.award_type === 1) {
+                    var pre_html = html + "<p style='text-align:center;'>实物奖品需要完善信息进行发放</p>";
+                    dialogObj.textHtml = pre_html;
+                }
+
+                if(activeResp.award_type === 2) {
+                    dialogObj = {
+                        title: '很遗憾，未中奖',
+                        textHtml: '谢谢参与！',
+                        callback: function(){
+                            location.reload();
+                        }
+                    }
+                }
+                bus.$emit('showCustomDialog', dialogObj);
+            },
+            lottery(activeId) {
+                var self = this;
+                taskLottery.lottery(activeId, function(res) {
+                    var giftResp = res.gift_resp;
+                    var activeResp = res.active_resp && res.active_resp.awards && res.active_resp.awards[0];
+                    SSPAd.report({
+                        actid: 2030003,
+                        awardId: activeResp && activeResp.award_id,
+                        retcode: res.ret_code,
+                        activityId: self.data.activeId,
+                    });
+                    if(res.ret_code === 802) {
+                        bus.$emit('showToast', '活动还没有开始哦，再等等吧[802]');
+                    } else if (res.ret_code === 803) {
+                        bus.$emit('showToast', '活动已经结束了，下次再来吧[803]');
+                    } else if (res.ret_code === 602) {
+                        bus.$emit('showToast', '此活动只限微信用户参与[602]');
+                    } else if (res.ret_code === 601) {
+                        bus.$emit('showToast', '此活动只限于QQ用户参与[601]');
+                    } else if (res.ret_code === 806) {
+                        bus.$emit('showToast', '您暂时不满足抽奖条件哦[806]');
+                    } else if (res.ret_code === 807) {
+                        bus.$emit('showToast', '网络异常，请稍后重试[807]');
+                    } else if (res.ret_code === 808) {
+                        bus.$emit('showToast', '活动异常，请稍后再试[808]');
+                    } else if (res.ret_code === 809) {
+                        bus.$emit('showToast', '对不起，您不满足任务条件，请完成后重试[809]');
+                    } else if (res.ret_code === 811) {
+                        bus.$emit('showToast', '对不起，您已达到当天最大的抽奖次数[811]');
+                    } else if (res.ret_code === 810) {
+                        bus.$emit('showToast', '网络异常，请稍后重试[810]');
+                    } else if (res.ret_code === 812) {
+                        bus.$emit('showToast', '您还没有抽奖机会，快去完成任务吧[812]');
+                    } else if (res.ret_code === 1200) {
+                        bus.$emit('showToast', '操作频繁，请刷新页面后重试[1200]');
+                    } else if(res.ret_code > 1) {
+                        bus.$emit('showToast', '抽奖异常，请稍后再试[' + res.ret_code + ']');
+                    } else if(res.ret_code === 1) {
+                        self.showGif(res);
+                    }else {
+                        bus.$emit('showToast', '网络异常，请稍后重试!!');
+                    }
+                    // 811 
+                    // 抽奖次数为0，您还没有抽奖机会，快去完成任务吧
+                });
+            },
+            showDialog(info) {
+                bus.$emit('showCustomDialog', {
+                    title: '活动规则',
+                    textHtml: info
+                })
+            },
+            initBtnStyle(item) {
+                return {
+                    backgroundImage: 'url(' + item.backgroundImage + ')',
+                    btnWidth: item.btnWidth / this.scaling + 'rem',
+                    btnHeight: item.btnHeight / this.scaling + 'rem',
+                    textColor: item.textColor,
+                    top: item.y / this.scaling + 'rem',
+                    left: item.x / this.scaling + 'rem',
+                    fontsize: item.fontsize / this.scaling + 'rem',
+                    show: item.show,
+                }
+            }
+        }
+    });
+
+    //toast-template
+    Vue.component('LToast', {
+        template: '#toast-template',
+        mounted: function() {
+            bus.$on('showToast', function(msg) {
+                var toast = document.getElementById('toast');
+                if (toast && toast.classList.contains('hide')) {
+                    toast.classList.remove('hide');
+                    document.getElementById('toastcontent').innerHTML = msg;
+                    setTimeout(function() {
+                        toast.classList.add('hide');
+                    }, 1500)
+                }
+            })
+        },
+        methods: {
+            closeToast: function() {
+                if (!document.getElementById('toast').classList.contains('hide')) {
+                    document.getElementById('toast').classList.add('hide')
+                }
+            }
+        }
+    });
+
+    // dialog-template
+    Vue.component('LDialog', {
+        template: '#dialog-template',
+        data:function() {
+            return {
+                title: '',
+                textHtml: '',
+                showDialog: false,
+            }
+        },
+        mounted: function(){
+            var self = this;
+            bus.$on('showCustomDialog', function(obj){
+                self.showCustomDialog(obj);
+            })
+            bus.$on('closeCustomDialog', function(){
+                self.closeDialog();
+            })
+        },
+        methods: {
+            handleBtn: function(i) {
+                if(this.buttons[i].callback) {
+                    this.buttons[i].callback();
+                } else {
+                    this.closeDialog();
+                }
+            },
+            showCustomDialog: function(obj) {
+                this.title = obj.title;
+                this.textHtml = obj.textHtml;
+                if(obj.buttons) {
+                    this.buttons = obj.buttons;
+                }
+                if(obj.callback) {
+                    this.callback = obj.callback;
+                }
+                this.showDialog = true;
+            },
+            closeDialog: function () {
+                this.showDialog = false;
+                if(this.callback) {
+                    this.callback();
+                }
+            }
+        }
+    });
+
+    // game-appinfo-module
+    Vue.component('LGameAppInfo', {
+        template: '#game-appinfo-template',
+        mounted:function(){
+            var ua = navigator.userAgent.toLowerCase();
+            if(ua.indexOf("iphone") < 0 && ua.indexOf("ipad") < 0) {
+                $('.game-appinfo').removeClass("hide");
+            }
+        },
+        methods: {
+            toPermission: function() {
+                window.location.href= window.permissionUrl;
+            },
+            toProtocal: function() {
+                bus.$emit('showCustomDialog', {
+                    title: '权限信息',
+                    textHtml: window.permissionhtml2
+                })
+            }
+        }
+    });
+    //guideToApp
+    Vue.component('LGuideToApp', {
+        template: '#guideToApp-template',
+        methods: {
+            closeGuide: function() {
+                $('#guideToApp').addClass('hide');
+            },
+            downloadQQNewsApp: function() {
+                SSPAd.report({
+                    'actid': 6003
+                });
+                setTimeout(function() {
+                    window.location.href = "//inews.qq.com/m";
+                }, 500)
+            }
+        }
+    });
+    // 页组件
+    Vue.component('LPage', {
+        template: '#page-template',
+        props: ['data', 'pIndex', 'landscape', 'scaling'],
+        data: function() {
+            return {}
+        },
+        computed: {
+            width: function() {
+                return this.data.width / this.scaling + 'rem';
+            },
+            height: function() {
+                return this.data.height / this.scaling + 'rem';
+            },
+            isLandscape: function() {
+                return (this.landscape) ? 'landscape' : 'portrait';
+            }
+        },
+        methods: {
+            handleShowVedio(e) {
+                var hotVedio = document.getElementsByClassName("hotVideoSpace");
+                for (var i = 0; i < hotVedio.length; i++) {
+                    hotVedio[i].setAttribute("data-vsid", i);
+                    hotVedio[i].nextElementSibling.pause();
+                }
+                if (e.target.className === "hotVideoSpace") {
+                    hotVedio[e.target.dataset.vsid].style.display = "none";
+                    hotVedio[e.target.dataset.vsid].nextElementSibling.style.display = "block";
+                    hotVedio[e.target.dataset.vsid].nextElementSibling.play();
+                    //视频开始和暂停、结束时上报,由于可能有多个视频，在此上报
+                    if (hotVedio[e.target.dataset.vsid].nextElementSibling) {
+                        hotVedio[e.target.dataset.vsid].nextElementSibling.addEventListener("playing", function() {
+                            SSPAd.report({
+                                actid: 1601
+                            });
+                        });
+                        hotVedio[e.target.dataset.vsid].nextElementSibling.addEventListener("pause", function() {
+                            SSPAd.report({
+                                actid: 1602
+                            });
+                        });
+                        hotVedio[e.target.dataset.vsid].nextElementSibling.addEventListener("ended", function() {
+                            SSPAd.report({
+                                actid: 1603
+                            });
+                        });
+                    }
+                }
+            }
+        }
+    });
+
+    // 预约浮层组件
+    Vue.component('LOrderPanel', {
+        template: '#order-panel-template',
+        methods: {
+            closePanel: function() {
+                document.getElementById('orderbox').classList.add("hide");
+                document.getElementById('orderMask').classList.add("hide");
+                $('.order-phone-info input').val('');
+                $('#orderAction').off('click');
+            }
+        }
+    })
+
+    // 预约按钮组件
+    Vue.component('LOrderButton', {
+        template: '#order-button-template',
+        props: ['data', 'pIndex', 'cIndex', 'landscape', 'scaling'],
+        computed: {
+            backgroundImage: function() {
+                return 'url(' + this.data.custom.backgroundImage + ')'
+            },
+            width: function() {
+                return this.data.custom.btnWidth / this.scaling + 'rem';
+            },
+            height: function() {
+                return this.data.custom.btnHeight / this.scaling + 'rem';
+            },
+            fontSize: function() {
+                return this.data.custom.fontSize / this.scaling + 'rem';
+            },
+            textColor: function() {
+                return this.data.custom.textColor.replace(/0x/, '#');
+            },
+            clickUrl: function() {
+                return this.data.custom.clickUrl;
+            },
+            title: function() {
+                return this.data.custom.title;
+            },
+            top: function() {
+                return this.data.y / this.scaling + 'rem';
+            },
+            left: function() {
+                return this.data.x / this.scaling + 'rem';
+            }
+        }
+    });
+
+
+    // 图片组件
+    Vue.component('LImage', {
+        template: '#image-template',
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        data: function() {
+            return {}
+        },
+        computed: {
+            imgUrl: function() {
+                return this.data.custom.imgUrl
+            },
+            width: function() {
+                return this.data.width / this.scaling + 'rem';
+            },
+            height: function() {
+                return this.data.height / this.scaling + 'rem';
+            },
+            top: function() {
+                return this.data.y / this.scaling + 'rem';
+            },
+            left: function() {
+                return this.data.x / this.scaling + 'rem';
+            }
+        },
+        methods: {}
+    });
+
+    // 充值直购组件  buyprop-template
+    Vue.component('LBuyProp', {
+        template: '#buyprop-template',
+        props: ['data', 'pIndex', 'cIndex', 'landscape', 'scaling'],
+        computed: {
+            backgroundImage: function() {
+                return 'url(' + this.data.backgroundImage + ')'
+            },
+            width: function() {
+                return this.data.btnWidth / this.scaling + 'rem';
+            },
+            height: function() {
+                return this.data.btnHeight / this.scaling + 'rem';
+            },
+            top: function() {
+                return this.data.y / this.scaling + 'rem';
+            },
+            left: function() {
+                return this.data.x / this.scaling + 'rem';
+            },
+            goodsId: function() {
+                return this.data.goodsId;
+            },
+            groupId: function() {
+                return this.data.groupId;
+            },
+            bizId: function() {
+                return this.data.bizId;
+            },
+            sandbox: function() {
+                return this.data.sandbox
+            }
+        },
+        methods: {
+            buyprop: function() {
+                getBriefDetail.init({});
+                SSPAd.report({
+                    'actid': 900004
+                });
+                var isInApp = true;
+                if (SSPAd.pageInfo.app !== 'qqnews') {
+                    isInApp = false;
+                }
+                if (!isInApp) {
+                    $('#guideToApp').removeClass('hide');
+                    var appInfo = {};
+                    var fromInfo = utilSSPAd.getQueryString('from') || 'XWbonbon';
+                    var params = 'linkurl=' + encodeURIComponent(location.href) + '&from=' + fromInfo;
+                    setTimeout(function() {
+                        window.MApp.openApp(appInfo, params);
+                    }, 500)
+                } else {
+                    if (checkIsLogin()) {
+                        var bonbonid = window.sessionStorage.bonbon_id || milo.cookie.get('bonbon_id');
+                        if(bonbonid && milo.cookie.get('main_login')) {
+                            var extend = encodeURIComponent('/detail/' + this.groupId + '/biz/' + this.bizId + '/goods/' + this.goodsId);
+                            var userString = '';
+                            if(milo.cookie.get("main_login") === 'qq') {
+                                userString = userString + '&sessionid=openid&sessiontype=kp_accesstoken&qq_appid=' + milo.cookie.get('open_appid') + '&openid=' + milo.cookie.get('open_openid') + '&openkey=' + milo.cookie.get('open_access_token');
+                            }
+
+                            if(milo.cookie.get("main_login") === 'wx' || milo.cookie.get("main_login") === 'weixin') {
+                                userString = userString + '&sessionid=hy_gameid&sessiontype=wc_actoken&wxAppid2=' + milo.cookie.get('appid') + '&openid=' + milo.cookie.get('openid') + '&openkey=' + milo.cookie.get('access_token');
+                            }
+                            
+                            var _url = 'https://pay.qq.com/h5/shop.shtml?type=outer&pf=__mds_news' + '&hash=' + extend + '&tx_buyer_id=' + bonbonid + userString;
+                            if (this.data.sandbox == 1) {
+                              _url = 'https://pay.qq.com/store/test/index.shtml?type=outer&sandbox=1&pf=__mds_news' + '&hash=' + extend + '&tx_buyer_id=' + bonbonid + userString;
+                            }
+
+                            console.log('跳转购买的url---', _url);
+
+                            SSPAd.report({
+                                'actid': 900005
+                            });
+
+                            utilSSPAd.openWebview(_url);
+                        } else {
+                            bus.$emit('showToast', '数据异常，Bon酱正在全力修复,可刷新页面再试[1000]');
+                        }
+                    } else {
+                        $('#confirmMask').removeClass('hide');
+                    }
+                }
+            }
+        }
+    });
+
+    // 按钮组件
+    Vue.component('LButton', {
+        template: '#button-template',
+        props: ['data', 'pIndex', 'cIndex', 'landscape', 'scaling'],
+        computed: {
+            backgroundImage: function() {
+                return 'url(' + this.data.custom.backgroundImage + ')'
+            },
+            width: function() {
+                return this.data.custom.btnWidth / this.scaling + 'rem';
+            },
+            height: function() {
+                return this.data.custom.btnHeight / this.scaling + 'rem';
+            },
+            fontSize: function() {
+                return this.data.custom.fontSize / this.scaling + 'rem';
+            },
+            textColor: function() {
+                return this.data.custom.textColor.replace(/0x/, '#');
+            },
+            clickUrl: function() {
+                return this.data.custom.clickUrl;
+            },
+            title: function() {
+                return this.data.custom.title;
+            },
+            top: function() {
+                return this.data.y / this.scaling + 'rem';
+            },
+            left: function() {
+                return this.data.x / this.scaling + 'rem';
+            },
+            barColor: function() {
+                return this.data.custom.barColor.replace(/0x/, '#');
+            },
+            barBgColor: function() {
+                return this.data.custom.barBgColor.replace(/0x/, '#');
+            },
+            autoDownload: function() {
+                return this.data.custom.autoDownload || '3';
+            }
+        },
+        mounted() {
+            window.localStorage.iclickbtnshowtime = Date.now();
+        }
+    });
+
+    // 多下载按钮组件
+    Vue.component('LDownloadButton', {
+        template: '#multi-download-template',
+        props: ['data', 'pIndex', 'cIndex', 'landscape', 'scaling'],
+        computed: {
+            backgroundImage: function() {
+                return 'url(' + this.data.backgroundImage + ')'
+            },
+            width: function() {
+                return this.data.width / this.scaling + 'rem';
+            },
+            height: function() {
+                return this.data.height / this.scaling + 'rem';
+            },
+            top: function() {
+                return this.data.y / this.scaling + 'rem';
+            },
+            left: function() {
+                return this.data.x / this.scaling + 'rem';
+            },
+            textColor: function() {
+                return 'rgba(0,0,0,0)';
+            },
+            gameId: function() {
+                return this.data.gameId;
+            }
+        },
+        mounted() {
+            window.download_game_list[this.gameId] = this.data;
+        }
+    });
+
+    // 跳转按钮组件
+    Vue.component('LJumpTo', {
+        template: '#jump-template',
+        props: ['data', 'pIndex', 'cIndex', 'landscape', 'scaling'],
+        computed: {
+            backgroundImage: function() {
+                return 'url(' + this.data.custom.backgroundImage + ')'
+            },
+            width: function() {
+                return this.data.custom.btnWidth / this.scaling + 'rem';
+            },
+            height: function() {
+                return this.data.custom.btnHeight / this.scaling + 'rem';
+            },
+            clickUrl: function() {
+                return this.data.custom.url;
+            },
+            top: function() {
+                return this.data.y / this.scaling + 'rem';
+            },
+            left: function() {
+                return this.data.x / this.scaling + 'rem';
+            },
+            typeRadio () {
+                return String(this.data.typeRadio)
+            },
+            words () {
+                return this.data.textObj && this.data.textObj.words
+            },
+            textStyle () {
+              if (this.data.textObj) {
+                return {
+                    fontSize: this.data.textObj.fontsize + 'px',
+                    color: this.data.textObj.fontcolor.replace(/0x/, '#'),
+                    fontWeight: this.data.textObj.isbold === 1 ? 'bold' : 'normal',
+                    textDecoration: this.data.textObj.isunderLine === 1 ? 'underline' : 'none',
+                }
+              } else {
+                  return {}
+              }
+            }
+        },
+        methods: {
+            jumpTo: function() {
+                SSPAd.report({
+                    'actid': 1605
+                });
+                var isInApp = true;
+                if (SSPAd.pageInfo.app !== 'qqnews') {
+                    isInApp = false;
+                }
+                if (this.data.custom.callApp && !isInApp) {
+                    $('#guideToApp').removeClass('hide');
+                    var appInfo = {};
+                    var fromInfo = utilSSPAd.getQueryString('from') || 'XWbonbon';
+                    var jumpurl = this.clickUrl;
+                    if (this.typeRadio == 2) {
+                        jumpurl = window.location.href;
+                    } 
+                    var params = 'linkurl=' + encodeURIComponent(jumpurl) + '&from=' + fromInfo;
+                    setTimeout(function() {
+                        window.MApp.openApp(appInfo, params);
+                    }, 1000)
+                } else {
+                    var _clickUrl = this.clickUrl;
+                    var actionType = this.data.actionType;
+                    if (actionType === 1 && _clickUrl) {
+                        setTimeout(function() {
+                            window.location.href = _clickUrl;
+                        }, 300)
+                    } else if (actionType === 2 && this.data.custom.textArea) {
+                        bus.$emit('showCustomDialog', {
+                            title: '',
+                            textHtml: this.data.custom.textArea
+                        })
+                    } else {
+                        return;
+                    }
+                }
+            }
+        }
+    });
+    
+    // 领取浮层组件
+    Vue.component('LGiftPanel', {
+        template: '#gift-panel-template',
+        methods: {
+            closePanel: function() {
+                document.getElementById('giftUserInfo').classList.add("hide");
+                document.getElementById('giftMask').classList.add("hide");
+                document.getElementById('userCon').classList.add("hide");
+                document.getElementById('roleSelect').classList.add("hide");
+            },
+            changeAccountButton: function() {
+                var ua = navigator.userAgent.toLowerCase();
+                if (ua.indexOf("qqnews") < 0 && ua.indexOf('qqsports') < 0) {
+                    alert('请在最新版腾讯新闻APP内使用该功能');
+                    return;
+                }
+            }
+        },
+        computed: {
+            btnText: function() {
+                if(window.confirmType === 'draw') {
+                    return '开始抽奖';
+                }
+                if(window.confirmType === 'tasklottery') {
+                    return '确认信息';
+                }
+                return '确定领取'
+            }
+        }
+    })
+
+    // 领取按钮组件
+    Vue.component('LGiftButton', {
+        template: '#gift-button-template',
+        props: ['data', 'pIndex', 'cIndex', 'landscape', 'scaling'],
+        computed: {
+            backgroundImage: function() {
+                return 'url(' + this.data.custom.backgroundImage + ')'
+            },
+            width: function() {
+                return this.data.custom.btnWidth / this.scaling + 'rem';
+            },
+            height: function() {
+                return this.data.custom.btnHeight / this.scaling + 'rem';
+            },
+            top: function() {
+                return this.data.y / this.scaling + 'rem';
+            },
+            left: function() {
+                return this.data.x / this.scaling + 'rem';
+            },
+            giftId: function() {
+                return this.data.custom.giftId
+            },
+            wx_app_id: function() {
+                return this.data.custom.wx_app_id
+            },
+            gameNameAbbr: function() {
+                return this.data.custom.gameNameAbbr
+            },
+            callApp: function() {
+                return this.data.custom.callApp
+            },
+            gift_source_type: function() {
+                return this.data.custom.gift_source_type
+            }
+        }
+    });
+    // 轮播图组件
+    Vue.component('LGallery', {
+        template: '#gallery-template',
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        data: function() {
+            return {
+                cindexAttr: this.cIndex,
+                gtime: {}
+            }
+        },
+        mounted: function() {
+            var that = this;
+            $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] li').eq(0).addClass('active');
+            this.len = this.data.custom.imgUrlList.length - 1;
+            var _width = this.data.width / this.scaling;
+            $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] ul').css({
+                'width': _width * this.data.custom.imgUrlList.length + 0.1 + 'rem'
+            });
+            this.gtime["index" + this.cindexAttr] = 0;
+            this.gtime["Timer" + this.cindexAttr] = setInterval(function() {
+                if (that.gtime["index" + that.cindexAttr] == that.len) {
+                    that.gtime["index" + that.cindexAttr] = 0;
+                    $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').removeClass('transition');
+                } else {
+                    that.gtime["index" + that.cindexAttr] = that.gtime["index" + that.cindexAttr] + 1;
+                    if (!$('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').hasClass('transition')) {
+                        $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').addClass('transition');
+                    }
+                }
+
+                $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] li').removeClass('active');
+                $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] li').eq(that.gtime["index" + that.cindexAttr]).addClass('active');
+                $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').css({
+                    'left': -_width * that.gtime["index" + that.cindexAttr] + 'rem'
+                })
+
+            }, 3000)
+        },
+        computed: {
+            width: function() {
+                return this.data.width / this.scaling + 'rem';
+            },
+            height: function() {
+                //if(this.data.height < this.data.width)
+                return this.data.height / this.scaling + 'rem';
+            },
+            top: function() {
+                return this.data.y / this.scaling + 'rem'
+            },
+            left: function() {
+                return this.data.x / this.scaling + 'rem'
+            }
+        },
+        methods: {
+            _touchedLeft: function(e) {
+                var that = this;
+                window.clearInterval(this.gtime["Timer" + this.cindexAttr]);
+                var _width = this.data.width / this.scaling;
+                if (this.gtime["index" + this.cindexAttr] == this.len) {
+                    this.gtime["index" + this.cindexAttr] = 0;
+                    $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] ul').removeClass('transition');
+                } else {
+                    this.gtime["index" + this.cindexAttr] = this.gtime["index" + this.cindexAttr] + 1;
+                    if (!$('.gallery-container[cindexAttr="' + this.cindexAttr + '"] ul').hasClass('transition')) {
+                        $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] ul').addClass('transition');
+                    }
+                }
+                $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] li').removeClass('active');
+                $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] li').eq(this.gtime["index" + this.cindexAttr]).addClass('active');
+                $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] ul').css({
+                    'left': -_width * that.gtime["index" + this.cindexAttr] + 'rem'
+                })
+
+                this.gtime["Timer" + this.cindexAttr] = setInterval(function() {
+                    if (that.gtime["index" + that.cindexAttr] == that.len) {
+                        that.gtime["index" + that.cindexAttr] = 0;
+                        $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').removeClass('transition');
+                    } else {
+                        that.gtime["index" + that.cindexAttr] = that.gtime["index" + that.cindexAttr] + 1;
+                        if (!$('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').hasClass('transition')) {
+                            $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').addClass('transition');
+                        }
+                    }
+
+                    $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] li').removeClass('active');
+                    $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] li').eq(that.gtime["index" + that.cindexAttr]).addClass('active');
+                    $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').css({
+                        'left': -_width * that.gtime["index" + that.cindexAttr] + 'rem'
+                    })
+                }, 3000)
+            },
+            _touchedRight: function(e) {
+                var that = this;
+                window.clearInterval(this.gtime["Timer" + this.cindexAttr]);
+                var _width = this.data.width / this.scaling;
+                if (this.gtime["index" + this.cindexAttr] == 0) {
+                    this.gtime["index" + this.cindexAttr] = this.len;
+                    $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] ul').removeClass('transition');
+                } else {
+                    this.gtime["index" + this.cindexAttr] = this.gtime["index" + this.cindexAttr] - 1;
+                    if (!$('.gallery-container[cindexAttr="' + this.cindexAttr + '"] ul').hasClass('transition')) {
+                        $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] ul').addClass('transition');
+                    }
+                }
+                //this.index -= 1;
+                $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] li').removeClass('active');
+                $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] li').eq(this.gtime["index" + this.cindexAttr]).addClass('active');
+                $('.gallery-container[cindexAttr="' + this.cindexAttr + '"] ul').css({
+                    'left': -_width * that.gtime["index" + this.cindexAttr] + 'rem'
+                })
+
+                this.gtime["Timer" + this.cindexAttr] = setInterval(function() {
+                    if (that.gtime["index" + that.cindexAttr] == that.len) {
+                        that.gtime["index" + that.cindexAttr] = 0;
+                        $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').removeClass('transition');
+                    } else {
+                        that.gtime["index" + that.cindexAttr] = that.gtime["index" + that.cindexAttr] + 1;
+                        if (!$('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').hasClass('transition')) {
+                            $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').addClass('transition');
+                        }
+                    }
+
+                    $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] li').removeClass('active');
+                    $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] li').eq(that.gtime["index" + that.cindexAttr]).addClass('active');
+                    $('.gallery-container[cindexAttr="' + that.cindexAttr + '"] ul').css({
+                        'left': -_width * that.gtime["index" + that.cindexAttr] + 'rem'
+                    })
+                }, 3000)
+            }
+        }
+    });
+
+    //视频组件
+    Vue.component('LVideo', {
+        template: '#video-template',
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        computed: {
+            videoUrl: function() {
+                return this.data.custom.videoUrl;
+            },
+            width: function() {
+                return this.data.width / this.scaling + 'rem'
+            },
+            height: function() {
+                return this.data.height / this.scaling + 'rem'
+            },
+            top: function() {
+                return this.data.y / this.scaling + 'rem'
+            },
+            left: function() {
+                return this.data.x / this.scaling + 'rem'
+            },
+            vid: function() {
+                return this.data.vid
+            }
+        },
+        mounted() {
+            if (this.data.v_type === 2 && this.data.vid) {
+                $(".mod_player").css({
+                    width: "100%",
+                    height: this.height
+                });
+
+                var playerConfig = {
+                    containerId: 'mod_player' + this.data.vid,
+                    vid: this.data.vid,
+                    width: '100%',
+                    height: 543,
+                    playerType: 'html5hd'
+                };
+                var player = new Txplayer(playerConfig);
+
+                const playerState = {
+                    '1': 1601, // 正在播放
+                    '2': 1602, // 暂停
+                    '0': 1603, // 结束
+                    '3': 1604 // 视频缓冲
+                }
+                player.on("playStateChange", state => {
+                    state = "" + state;
+                    report({
+                        'actid': playerState[state],
+                        'vid': this.data.vid,
+                    });
+                });
+            }
+        }
+    })
+
+    // 顶部视频组件
+    Vue.component('LTopVideo', {
+        template: '#top-video-template',
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        computed: {
+            videoUrl: function() {
+                return this.data.custom.videoUrl;
+            },
+            width: function() {
+                return this.data.width / this.scaling + 'rem'
+            },
+            height: function() {
+                return this.data.height / this.scaling + 'rem'
+            },
+            videoCover: function() {
+                return this.data.custom.videoCover;
+            }
+        },
+        mounted: function() {
+            // var _height = $(window).height() - 150;
+            $('.topVideo').removeClass('hide');
+            $('#topVideo').attr('poster', this.videoCover);
+            $('#topVideo').attr('src', this.videoUrl);
+            $('#app').addClass('pagebody');
+            var topMask = $('.topmask');
+            if (topMask) {
+                topMask.css('position', 'absolute');
+            }
+        }
+    })
+
+    //底部浮层组件
+    Vue.component('LBottomDownload', {
+        template: "#mask-template",
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        data: function(){
+            return {
+                pf: ''
+            }
+        },
+        computed: {
+            bgColor: function() {
+                return this.data.custom.maskColor.replace(/0x/, '#');
+            },
+            textColor: function() {
+                return this.data.custom.textColor.replace(/0x/, '#');
+            },
+            title: function() {
+                if (this.data.maskType == 1) {
+                    return '立即下载';
+                } else {
+                    return '立即预约';
+                }
+            },
+            width: function() {
+                return this.data.width / this.scaling + 'rem'
+            },
+            height: function() {
+                return this.data.height / this.scaling + 'rem'
+            },
+            fontSize: function() {
+                return 28 / this.scaling + 'rem'
+            },
+            maskId: function() {
+                if (this.data.maskType == 1) {
+                    return 'maskDownload';
+                } else {
+                    return 'maskOrderGame';
+                }
+            },
+        },
+        methods: {
+            toPermission: function(){
+                window.location.href= window.permissionUrl;
+            },
+            toProtocal: function(){
+                bus.$emit('showCustomDialog', {
+                    title: '权限信息',
+                    textHtml: window.permissionhtml2
+                })
+            }
+        },
+        mounted() {
+            var self = this;
+            window.localStorage.iclickbtnshowtime = Date.now();
+            setTimeout(function(){
+                self.pf = utilSSPAd.getPlatform();
+            }, 300)
+        }
+    })
+
+    // 更多推荐组件
+    Vue.component('LMoreRecommend', {
+        template: "#more-recommend-template",
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        computed: {
+            ruleid: function() {
+                return this.data.custom.ruleid;
+            },
+            moreRecommendUrl: function() {
+                return this.data.custom.moreRecommendUrl;
+            }
+        },
+        data: function() {
+            return {
+                'game_list': []
+            }
+        },
+        mounted: function() {
+            var _this = this;
+            var url = "//n.ssp.qq.com/api/getGameList";
+            var reqData = {
+                "pub_type": 2,
+                "req_type": 1,
+                "login_type": 2,
+                "app": {
+                    "name": "SPJS",
+                    "ver": "1.0.0"
+                }
+            };
+            reqData.device = {
+                'os': 2,
+                'ext': {}
+            }
+
+            reqData.game_info = {
+                "rule_id": this.ruleid,
+                "is_first_req": true
+            }
+            axios
+                .post(url, reqData)
+                .then(function(response) {
+                    _this.game_list = response && response.data && response.data.rule_modules[0] && response.data.rule_modules[0].game_list || [];
+                    if (_this.game_list.length > 8) {
+                        _this.game_list.length = 8;
+                    }
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+        },
+        methods: {
+            jumpTo: function() {
+                var _this = this;
+                SSPAd.report({
+                    'actid': 1604
+                })
+                setTimeout(function() {
+                    window.location.href = _this.moreRecommendUrl
+                }, 300)
+            }
+        }
+    })
+
+    // 更多小游戏推荐组件
+    Vue.component('LMoreMiniGameRecommend', {
+        template: "#more-minigame-recommend-template",
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        data: function() {
+            return {
+                'game_list': []
+            }
+        },
+        mounted: function() {
+            var _this = this;
+            setTimeout(function(){
+                _this.queryList();
+            }, 300);
+        },
+        methods: {
+            queryList: function() {
+                var _this = this;
+                var pf = utilSSPAd.getPlatform();
+                var rule_id = this.data.ios_ruleid;
+                this.moreRecommendUrl = this.data.ios_moreRecommendUrl;
+                if(pf === 'aphone') {
+                    rule_id = this.data.android_ruleid;
+                    this.moreRecommendUrl = this.data.android_moreRecommendUrl;
+                }
+
+                // 如果没有ruleid，直接return
+                if(!rule_id) {
+                    return;
+                }
+
+                var url = "//n.ssp.qq.com/gameapi/getGameList";
+                if(location.href.indexOf('bontestbon') > -1) {
+                    url = '//bontest.sparta.html5.qq.com/gameapi/getGameList';
+                }
+                var reqData = {
+                    "pub_type": 2,
+                    "req_type": 1,
+                    "login_type": 2,
+                    "game_info": {
+                        "rule_id": rule_id,
+                        "is_first_req": true
+                    }
+                };
+
+                axios
+                    .post(url, reqData)
+                    .then(function(response) {
+                        _this.game_list = response && response.data && response.data.rule_modules[0] && response.data.rule_modules[0].minigame_list || [];
+                        if (_this.game_list.length > 8) {
+                            _this.game_list.length = 8;
+                        }
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            },
+            jumpTo: function() {
+                var _this = this;
+                SSPAd.report({
+                    'actid': 1604
+                })
+                setTimeout(function() {
+                    window.location.href = _this.moreRecommendUrl || 'https://bon.mini.qq.com/?scene=3003';
+                }, 300)
+            },
+            openGame: function(info) {
+                console.log('go to minigame');
+                if(utilSSPAd.getAPP() !== 'qqnews') {
+                    // 不在端内提示
+                    bus.$emit('showToast', '请到腾讯新闻App再尝试打开小游戏');
+                    return;
+                }
+                // openDirectGame调用入参gameUrl, gameid, version
+                var game_id = info.game_id;
+                var gameUrl = info.appid_link;
+
+                /**
+                 * 根据平台和小游戏类型判断版本
+                 * 1、对于安卓版本大于等于6.2.7版本时，当用户点击小游戏类型=【直营类型】的小游戏时，使用全面屏的webview打开。
+                 * 2、对于安卓版本小于6.2.7版本时，当用户点击小游戏类型=【直营类型】的小游戏时，使用正常的webview进行打开。
+                 * 
+                 * 3、对于安卓版本大于6.2.17版本时，当用户点击小游戏类型=【合作类型】的小游戏时，则通过小程序插件打开对应的小游戏。
+                 * 4、对于安卓版本小于6.2.17版本时，当用户点击小游戏类型=【合作类型】的小游戏时，弹出提示框，并且引导用户前往客户端设置页面进行升级。
+                 * 
+                 * 5、对于IOS版本大于等于6.2.7版本时，当用户点击小游戏类型=【直营类型】的小游戏时，使用全面屏的webview打开。
+                 * 6、对于IOS版本小于6.2.7版本时，当用户点击小游戏类型=【直营类型】的小游戏时，使用正常的webview进行打开。
+                 */
+                
+                // game_type为2是内购类型，需要强制登录
+                if (info.game_type === 2 && !checkIsLogin()) {
+                    $('#confirmMask').removeClass('hide');
+                    return;
+                }
+
+                var version;
+                if(info.inner_app === 2) {
+                    // 安卓和ios直营
+                    version = '6.2.7';
+                    SSPAd.report({
+                        actid: 900001,
+                        minigameID: info.game_id
+                    })
+
+                    // reportUrl
+                    // SSPAd.report({
+                    //     reportUrl: '//op.ssp.qq.com/minigame',
+                    //     actid: 900001,
+                    //     minigameID: info.game_id
+                    // })
+                    utilSSPAd.openDirectGame(gameUrl, game_id, version);
+                } else {
+                    // 合作类
+                    version = '6.2.17';
+                    var userInfo = window.localStorage.userInfo && JSON.parse(window.localStorage.userInfo) || {};
+                    var nick = userInfo.nick || '腾讯网友';
+                    if (SSPAd.pageInfo.pf === 'aphone' && utilSSPAd.compareVersion(SSPAd.pageInfo.appVer, version) >= 0) {
+                        SSPAd.report({
+                            actid: 900001,
+                            minigameID: info.game_id
+                        })
+                        // reportUrl
+                        // report({
+                        //     reportUrl: '//op.ssp.qq.com/minigame',
+                        //     actid: 900001,
+                        //     minigameID: info.game_id
+                        // })
+                        utilSSPAd.openMiniGame(
+                            info.appid_link,
+                            nick,
+                            milo.cookie.get("bonbon_id") || window.sessionStorage.bonbon_id || milo.cookie.get("minigame_deviceid") || milo.cookie.get('devid') || milo.cookie.get('qimei') || '',
+                            1006,
+                            info.game_id
+                        )
+                    } else {
+                        // 提示升级
+                        bus.$emit('showCustomDialog', {
+                            title: '升级提示',
+                            textHtml: '请升级到最新版本再尝试打开小游戏',
+                        })
+                        return;
+                    }
+                }
+            }
+        }
+    })
+
+    // 分享组件
+    Vue.component('LShareCon', {
+        template: '#shareCon-template',
+        props: ['data', 'pIndex', 'cIndex', 'landscape', 'scaling'],
+        computed: {
+          backgroundImage: function() {
+              return 'url(' + this.data.custom.backgroundImage + ')'
+          },
+          width: function() {
+              return this.data.custom.btnWidth / this.scaling + 'rem';
+          },
+          height: function() {
+              return this.data.custom.btnHeight / this.scaling + 'rem';
+          },
+          top: function() {
+              return this.data.y / this.scaling + 'rem';
+          },
+          left: function() {
+              return this.data.x / this.scaling + 'rem';
+          },
+        },
+        methods: {
+            callShare: function() {
+                console.log('callshare');
+                SSPAd.report({
+                    actid: 11001
+                })
+
+                var appVer = SSPAd.pageInfo.appVer;
+                if ((
+                    SSPAd.pageInfo.pf === 'iphone' && utilSSPAd.compareVersion(appVer, '6.1.25') > 0
+                )
+                || (
+                    SSPAd.pageInfo.pf === 'aphone' && utilSSPAd.compareVersion(appVer, '6.1.17') > 0
+                )) {
+                    var pageInfo = JSON.parse(window.getPageInfo());
+
+                    TencentNews.invoke('setShareArticleInfo', {
+                        'title': pageInfo.pageName || 'BonBon游戏',
+                        'longTitle': pageInfo.pageName || 'BonBon游戏',
+                        'content': pageInfo.pageDesc || '快乐更快，易燃易Bon',
+                        'url': window.location.href || "http://n.ssp.qq.com?ishare=1",
+                        'imgUrl': pageInfo.shareIcon || "http://h5.ssp.qq.com/news.png",
+                        'onCallback': function(data) {
+                            console.log(data);
+                        }
+                    });
+                    TencentNews.invoke('showActionMenu', {
+                        'onCallback': function(data) {
+                            console.log(data);
+                        }
+                    });
+                } else {
+                    bus.$('showToast', '请在最新版腾讯新闻APP内使用该功能');
+                }
+            },
+        }
+    });
+
+    // 一键拉群组件
+    Vue.component('LAddQQGroup', {
+        template: '#qqGroupCon-template',
+        props: ['data', 'pIndex', 'cIndex', 'landscape', 'scaling'],
+        computed: {
+          backgroundImage: function() {
+              return 'url(' + this.data.custom.backgroundImage + ')'
+          },
+          width: function() {
+              return this.data.custom.btnWidth / this.scaling + 'rem';
+          },
+          height: function() {
+              return this.data.custom.btnHeight / this.scaling + 'rem';
+          },
+          top: function() {
+              return this.data.y / this.scaling + 'rem';
+          },
+          left: function() {
+              return this.data.x / this.scaling + 'rem';
+          },
+          addGroupCode: function() {
+            return this.data.addGroupCode;
+          }
+        }
+    });
+
+    //顶部浮层组件
+    Vue.component('LTopMask', {
+        template: "#top-mask-template",
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        computed: {
+            needRecommend: function() {
+                return this.data.custom.needRecommend;
+            },
+            recommendUrl: function() {
+                return this.data.custom.recommendUrl;
+            },
+            className: function() {
+                if (this.data.custom.needRecommend) {
+                    return "recommend";
+                } else {
+                    return "hide";
+                }
+            },
+            nickhead: function() {
+                return "//h5.ssp.qq.com/static/test/user-green.png";
+            }
+        },
+        methods: {
+            changeAccount: function() {
+                if (document.getElementById('confirmMask').classList.contains('hide')) {
+                    SSPAd.report({
+                        actid: 851000
+                    });
+                    document.getElementById('confirmMask').classList.remove("hide");
+                    if (!document.getElementById('giftUserInfo').classList.contains('hide')) {
+                        document.getElementById('giftUserInfo').classList.add("hide");
+                    }
+                }
+            },
+            closeConfirmMask: function() {
+                SSPAd.report({
+                   actid: 853001
+                });
+                document.getElementById('confirmMask').classList.add("hide");
+            }
+        }
+    })
+
+    Vue.component('LLotteryTurntable', {
+        template: '#lottery-turntable',
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        computed: {
+            top: function() {
+                return this.data.background.y / this.scaling + 'rem';
+            },
+            left: function() {
+                return this.data.background.x / this.scaling + 'rem';
+            },
+            width: function() {
+                return this.data.background.bgWidth / this.scaling + 'rem';
+            },
+            height: function() {
+                return this.data.background.bgHeight / this.scaling + 'rem';
+            },
+            bgImage: function() {
+                return this.data.background.backgroundImage;
+            },
+            tickTop: function() {
+                return this.data.tick.y / this.scaling + 'rem';
+            },
+            tickLeft: function() {
+                return this.data.tick.x / this.scaling + 'rem';
+            },
+            tickWidth: function() {
+                return this.data.tick.tickWidth / this.scaling + 'rem';
+            },
+            tickHeight: function() {
+                return this.data.tick.tickHeight / this.scaling + 'rem';
+            },
+            tickImage: function() {
+                return this.data.tick.backgroundImage;
+            },
+            btnTop: function() {
+                return this.data.button.y / this.scaling + 'rem';
+            },
+            btnLeft: function() {
+                return this.data.button.x / this.scaling + 'rem';
+            },
+            btnWidth: function() {
+                return this.data.button.btnWidth / this.scaling + 'rem';
+            },
+            btnHeight: function() {
+                return this.data.button.btnHeight / this.scaling + 'rem';
+            },
+            btnBackgroundImage: function() {
+                return this.data.button.backgroundImage;
+            },
+            isBtnShow: function() {
+                return this.data.showMyAward == 1;
+            }
+        },
+        methods: {
+            buttonClick: function() {
+                window.currentDraw = {
+                    gameNameAbbr: this.data.gameNameAbbr,
+                    activeId: this.data.activeId
+                }
+                bus.$emit('PRIZE_INFO_OPEN');
+                // 点击我的奖品按钮上报
+                bus.$emit('LOTTERY_REPORT', 842000);
+            },
+            getParams: function(obj) {
+                var str = '';
+                for (var key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        str = str + key + "=" + obj[key] + "&";
+                    }
+                }
+                str = str.substring(0, str.length - 1);
+                return str;
+            }
+        },
+        mounted: function() {
+            bus.$on('LOTTERY_REPORT', function(lotteryActid) {
+                var reportUrl = '//c.ssp.qq.com/appgo?';
+                var reportParams = {
+                    oid: lotteryBox.pageInfo.oid,
+                    locationId: lotteryBox.pageInfo.locationId,
+                    gameId: lotteryBox.orderInfo.gameId,
+                    pf: lotteryBox.pageInfo.pf,
+                    app: lotteryBox.pageInfo.app,
+                    imei: milo.cookie.get("imei") || '',
+                    idfa: milo.cookie.get("idfa") || '',
+                    omgid: milo.cookie.get("omgid") || '',
+                    mobStr: localStorage.mobStr,
+                    soid: giftBox.pageInfo.soid,
+                    qq: document.getElementById('loginInfo').getAttribute('data-open-id'),
+                    wx: document.getElementById('loginInfo').getAttribute('data-open-id'),
+                    gameNameAbbr: this.data.gameNameAbbr,
+                    actid: lotteryActid,
+                    pageType: 'lander',
+                };
+                var image = new Image();
+                image.src = reportUrl + this.getParams(reportParams);
+            }.bind(this));
+        },
+    });
+
+    Vue.component('LLotteryResult', {
+        template: '#lottery-result',
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        data: function() {
+            return {
+                success: true,
+                isEntity: false,
+            };
+        },
+        methods: {
+            cancelAction: function() {
+                document.getElementById('lotteryResultPanel').classList.add("hide");
+                document.getElementById('lotteryResultMask').classList.add("hide");
+            },
+            fillInfoAction: function() {
+                this.cancelAction();
+                var prizeReceiveTime = document.getElementById('prizeReceiveTime');
+                var prizeFormInfoConfig = document.getElementById('prizeFormInfoConfig');
+                var configValue = prizeFormInfoConfig.value;
+                var info_types = configValue === '' ? [] :
+                    configValue.split(',').map(function(el) {
+                        return Number(el);
+                    });
+                bus.$emit('USER_INFO_INPUT', Number(prizeReceiveTime.value), info_types);
+                bus.$emit('LOTTERY_REPORT', 842001);
+            },
+        },
+    })
+
+    Vue.component('LLotteryPrize', {
+        template: '#lottery-prize',
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        data: function() {
+            return {
+                show: false,
+                listData: [],
+            };
+        },
+        computed: {
+            headerSrc: function() {
+                return '//h5.ssp.qq.com/static/test/landerPage/resources/header.png'
+            },
+        },
+        methods: {
+            closePanel: function() {
+                this.show = false;
+            },
+            checkUserInfo: function(receiveTime) {
+                bus.$emit('LOTTERY_REPORT', 842002);
+            },
+            fillUserInfo: function(receiveTime, infoTypes) {
+                this.show = false;
+                bus.$emit('LOTTERY_REPORT', 842010);
+                bus.$emit('USER_INFO_INPUT', receiveTime, infoTypes);
+            },
+            dateFormat: function(stamp) {
+                return (new Date(Number(stamp) * 1000)).toLocaleString('ja');
+            },
+        },
+        mounted: function() {
+            bus.$on('PRIZE_INFO_OPEN', function() {
+                var activeId = window.currentDraw.activeId;
+                // 获取奖品记录
+                var chid = lotteryBox.pageInfo.app;
+                var url = '//n.ssp.qq.com/api/getActiveHistory/' + activeId + '/' + chid;
+                axios
+                    .get(url, {
+                        'withCredentials': true,
+                    })
+                    .then(function(response) {
+                        var data = response.data;
+                        if (data && data.active_resp && data.active_resp.awards && data.active_resp.awards.length > 0) {
+                            this.listData = data.active_resp.awards.filter(function(el) {
+                                return el && el.award_type !== 2;
+                            }).sort(function(a, b) {
+                                return b.receive_time - a.receive_time;
+                            });
+                        } else {
+                            this.listData = [];
+                        }
+                        this.show = true;
+                    }.bind(this))
+                    .catch(function(err) {
+                        this.listData = [];
+                        this.show = true;
+                    }.bind(this));
+            }.bind(this));
+        }
+    })
+
+    Vue.component('LLotteryUserInfo', {
+        template: '#lottery-user-info',
+        props: ['data', 'pIndex', 'cIndex', 'scaling'],
+        data: function() {
+            return {
+                identifyCodeText: '获取验证码',
+                timeCountDown: 60,
+                callForCode: false,
+                postData: {
+                    name: '',
+                    phone_number: '',
+                    qq: '',
+                    addr: '',
+                    wx: '',
+                    verify_code: '',
+                },
+                settings: [{
+                    name: 'name',
+                    text: '姓名:',
+                }, {
+                    name: 'phone_number',
+                    text: '手机号:',
+                }, {
+                    name: 'qq',
+                    text: 'QQ号:',
+                }, {
+                    name: 'addr',
+                    text: '地址:',
+                }, {
+                    name: 'wx',
+                    text: '微信号:',
+                }],
+                formConfig: [],
+                show: false,
+                tryCount: 0,
+                targetUptTime: null,
+                countDownInterval: null,
+            }
+        },
+        methods: {
+            submit: function() {
+                // 检查表单是否填写完成
+                console.log('before submit', this.formConfig);
+                for (var i = 0; i < this.formConfig.length; i++) {
+                    var tmp = this.formConfig[i];
+                    if (this.postData[this.settings[tmp].name] === '') {
+                        this.setToast(this.settings[tmp].text + '没有填写, 请完整填写');
+                        return;
+                    }
+
+                    if (this.settings[tmp].name === 'phone_number') {
+                        var phoneValue = this.postData.phone_number.toString();
+                        if (!phoneValue || !phoneValue.startsWith('1') || phoneValue.length !== 11) {
+                            this.setToast('手机号格式错误，请重新填写');
+                            return;
+                        }
+                    }
+                }
+                
+                // 将用户地址encode后提交
+                this.postData.addr = encodeURIComponent(this.postData.addr);
+                
+                bus.$emit('LOTTERY_REPORT', 842003);
+                // 验证码检查
+                var chid = lotteryBox.pageInfo.app;
+                var postData = {
+                    active_id: window.currentDraw.activeId,
+                    draw_user_info: this.postData,
+                    receive_time: this.targetUptTime,
+                    chid: chid,
+                }
+                var url = '//n.ssp.qq.com/api/setActiveUserBaseInfo';
+                axios
+                    .post(url, postData, {
+                        withCredentials: true,
+                    })
+                    .then(function(response) {
+                        const data = response.data;
+                        if (data.ret_code === 901) {
+                            this.setToast('验证码填写错误, 请重试');
+                        } else if (data.ret_code === 902) {
+                            this.setToast('验证网络出问题, 请重试');
+                        } else if (data.ret_code === 1) {
+                            this.show = false;
+                            this.clearForm();
+                            this.setToast('提交成功');
+                        } else {
+                            this.setToast('网络异常，请稍后重试');
+                        }
+                    }.bind(this))
+                    .catch(function(error) {
+                        console.log(error);
+                        this.clearForm();
+                        this.setToast('网络异常，请稍后重试');
+                    }.bind(this));
+            },
+            setToast: function(msg) {
+                var toast = document.getElementById('toast');
+                if (toast && toast.classList.contains('hide')) {
+                    toast.classList.remove('hide');
+                    document.getElementById('toastcontent').innerHTML = msg;
+                    setTimeout(function() {
+                        toast.classList.add('hide');
+                    }, 1500)
+                }
+            },
+            resetIdentifyCode: function() {
+                this.callForCode = false;
+                this.identifyCodeText = '获取验证码';
+                if (this.countDownInterval) {
+                    clearInterval(this.countDownInterval)
+                    this.countDownInterval = null;
+                }
+                this.timeCountDown = 60;
+            },
+            closePanel: function() {
+                this.show = false;
+                this.tryCount = 0;
+                this.clearForm();
+                bus.$emit('PRIZE_INFO_OPEN');
+            },
+            clearForm: function() {
+                this.postData = {
+                    name: '',
+                    phone_number: '',
+                    qq: '',
+                    addr: '',
+                    wx: '',
+                    verify_code: '',
+                };
+                this.resetIdentifyCode();
+            },
+            getIdentifyCode: function() {
+                var phoneValue = this.postData.phone_number.toString();
+                if (!phoneValue || !phoneValue.startsWith('1') || phoneValue.length !== 11) {
+                    this.setToast('手机号格式错误，请重新填写');
+                    return;
+                }
+
+                if (this.callForCode) return;
+
+                this.callForCode = true;
+                var url = '//n.ssp.qq.com/api/sendVerifyCode';
+                const postData = {
+                    active_id: window.currentDraw.activeId,
+                    receive_time: this.targetUptTime,
+                    draw_user_info: {
+                        phone_number: this.postData.phone_number,
+                    },
+                }
+
+                axios
+                    .post(url, postData, {
+                        withCredentials: true,
+                    })
+                    .then(function(response) {
+                        var retCode = response.data.ret_code;
+                        if (retCode === 902) {
+                            this.setToast('验证网络出问题, 请重试');
+                        } else if (retCode === 1) {
+                            this.countDownInterval = setInterval(function() {
+                                this.timeCountDown--;
+                                if (this.timeCountDown < 0) {
+                                    this.resetIdentifyCode();
+                                } else {
+                                    this.identifyCodeText = '重新获取 (' + this.timeCountDown + 's)'
+                                }
+                            }.bind(this), 1000);
+                        } else {
+                            this.setToast('验证网络出问题, 请重试.');
+                        }
+                    }.bind(this))
+                    .catch(function(err) {
+                        console.error(err);
+                        this.resetIdentifyCode();
+                        this.setToast('验证网络出问题, 请重试.');
+                    }.bind(this));
+            },
+            renderInfoTypes: function(infoTypes) {
+                if (infoTypes && infoTypes.length > 0) {
+                    this.formConfig = infoTypes.map(function(item) {
+                        return Math.log2(item);
+                    }).sort(function(a, b) {
+                        return a - b;
+                    });
+                } else {
+                    this.formConfig = []
+                }
+                this.show = true;
+            },
+        },
+        mounted: function() {
+            bus.$on('USER_INFO_INPUT', function(receiveTime, infoTypes) {
+                // TODO 1. 请求配置信息
+                this.targetUptTime = receiveTime;
+                var activeId = window.currentDraw.activeId;
+                var chid = lotteryBox.pageInfo.app;
+                var formInfoUrl = '//n.ssp.qq.com/api/getActiveUserBaseInfo/' + activeId + '/' + this.targetUptTime + '/' + chid;
+                axios
+                    .get(formInfoUrl, {
+                        'withCredentials': true,
+                    })
+                    .then(function(response) {
+                        var retCode = response.data.ret_code;
+                        if (retCode !== 804) {
+                            // 查询到之前填写的信息
+                            if (response.data && response.data.active_resp) {
+                                var activeData = response.data.active_resp;
+                                if (activeData.phone == 0) {
+                                    activeData.phone = "";
+                                }
+                                if (activeData.qq == 0) {
+                                    activeData.qq = "";
+                                }
+                                this.postData = {
+                                    name: activeData.name,
+                                    phone_number: activeData.phone,
+                                    qq: activeData.qq,
+                                    addr: decodeURIComponent(activeData.addr),
+                                    wx: activeData.wx,
+                                }
+                                this.renderInfoTypes(infoTypes);
+                            }
+                        } else {
+                            if (this.tryCount < 3) {
+                                bus.$emit('USER_INFO_INPUT', receiveTime, infoTypes);
+                            } else {
+                                this.renderInfoTypes(infoTypes)
+                            }
+                            this.tryCount++;
+                        }
+                    }.bind(this))
+                    .catch(function(err) {
+                        console.log(err);
+                        this.renderInfoTypes(infoTypes);
+                    }.bind(this));
+            }.bind(this));
+        },
+    });
+
+    //点击领取按钮或者点击下载 提示組件
+    Vue.component('LTipsToast', {
+        template: "#tipstoast-template",
+        data: function() {
+            return {
+                tipsTimeId: null,
+                isDownloadFlag: 1
+            }
+        },
+        methods: {
+            //打开模态框前调用
+            fixedBody: function() {
+                var scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+                document.body.style.cssText += 'position:fixed;top:-' + scrollTop + 'px;';
+            },
+            //关闭模态框后调用
+            looseBody: function() {
+                var body = document.body;
+                body.style.position = 'static';
+                var top = body.style.top;
+                document.body.scrollTop = document.documentElement.scrollTop = -parseInt(top);
+                body.style.top = '';
+            },
+            closetipsDialog: function() {
+                // 关闭整个弹框
+                if (!this.isDownloadFlag) {
+                    SSPAd.report({
+                        'tipsActid': 2002
+                    });
+                } else {
+                    SSPAd.report({
+                        'tipsActid': 1002
+                    });
+                }
+                if (this.tipsTimeId) {
+                    clearInterval(this.tipsTimeId);
+                }
+                this.looseBody();
+                var tipsWapper = document.getElementsByClassName('tipsMask')[0];
+                tipsWapper.classList.add('hide');
+            },
+            tipsTiming: function(msg, tipsStatusURL, time, isDownloadFlag) {
+                var _this = this;
+                this.isDownloadFlag = isDownloadFlag;
+                this.fixedBody();
+                tipsStatusURL = tipsStatusURL || "//h5.ssp.qq.com/static/web/websites/lps/image/start.png";
+                var tipsWapper = document.getElementsByClassName('tipsMask')[0];
+                var tipsStatus = document.getElementsByClassName('tips-status')[0].firstElementChild;
+                var tipTime = document.getElementById('tipTime');
+                var tipsJump = document.getElementById('tipsJumpBtn');
+
+                if (_this.tipsTimeId) {
+                    if (!tipsWapper.classList.contains('hide')) {
+                        tipsWapper.classList.add('hide');
+                    }
+                    clearInterval(_this.tipsTimeId);
+                }
+                if (!isDownloadFlag) {
+                    tipsJump.lastElementChild.innerText = "点击领取更多游戏礼包~";
+                    tipsJump.firstElementChild.setAttribute('src', "//h5.ssp.qq.com/static/web/websites/lps/image/gift.png");
+                } else {
+                    tipsJump.lastElementChild.innerText = "更多精彩游戏点击这里~";
+                    tipsJump.firstElementChild.setAttribute('src', "//h5.ssp.qq.com/static/web/websites/lps/image/game-icon.png");
+                }
+                document.getElementById('tipsMsg').innerText = msg;
+                tipsStatus.setAttribute('src', tipsStatusURL);
+                if (tipsWapper.classList.contains('hide')) {
+                    tipsWapper.classList.remove('hide');
+                }
+                tipsJump.addEventListener('click', function() {
+                    if (!isDownloadFlag) {
+                        SSPAd.report({
+                            'tipsActid': 2001
+                        });
+                    } else {
+                        SSPAd.report({
+                            'tipsActid': 1001
+                        });
+                    }
+                    setTimeout(function() {
+                        window.location.href = "//n.ssp.qq.com";
+                    }, 300)
+                    if (_this.tipsTimeId) {
+                        clearInterval(_this.tipsTimeId);
+                    }
+                })
+            }
+        },
+        mounted: function() {
+            window.tipsTiming = this.tipsTiming;
+        },
+        destroyed: function() {
+            if (_this.tipsTimeId) {
+                clearInterval(_this.tipsTimeId);
+            }
+        },
+    })
+
+    new Vue({
+        el: '#app',
+        data: {
+            scaling: 75,
+            data: {"head":{"version":"0.1.0","width":750,"height":1334,"bgColor":"0x000000","landscape":false,"share_title":"巨幕落地页分享","share_desc":"分享摘要","share_pic":"http://h5.ssp.qq.com/static/web/sturnus/landscape/image/1.jpg","share_url":"http://v.l.qq.com/wx/c/wx/test2"},"body":{"view":"scrollView","subviews":[{"view":"page","x":0,"y":0,"width":750,"height":2759,"subviews":[{"view":"image","x":0,"y":0,"width":750,"height":2759,"custom":{"imgUrl":"https://h5.ssp.qq.com/lps/production/material/202104/173534_v_qypi_df509448f123555d08e5a3b8aa84e80c.jpg","preload":true}},{"view":"button","x":"200","y":"650","width":750,"height":80,"custom":{"backgroundImage":"https://h5.ssp.qq.com/lps/production/material/202104/172506_v_qypi_54491f67eb22fe2afe83c40d1960851c.png","btnWidth":345,"btnHeight":109,"fontSize":"32","title":"立即下载","btnColor":"0xBB8A48","borderColor":"0xBB8A48","textColor":"0xFFFFFF","clickUrl":"http://grsm.qq.com","isBold":true,"barColor":"0xCCAA62","barBgColor":"0xFAEEB9","fontWeight":""}},{"view":"draw","gameNameAbbr":"yxzj","rotate":0,"showMyAward":0,"count":7,"callApp":true,"background":{"backgroundImage":"https://h5.ssp.qq.com/lps/production/material/202104/162358_v_qypi_1f6c47c5d4e2f82aa351d55a22707881.png","x":"80","y":"970","bgWidth":600,"bgHeight":600},"tick":{"backgroundImage":"https://h5.ssp.qq.com/lps/production/material/202104/162532_v_qypi_ac5dea36c60b950f8e554ddeb3cc20e6.png","x":"275","y":"1160","tickWidth":200,"tickHeight":200},"button":{"backgroundImage":"http://h5.ssp.qq.com/lps/test/material/201909/201045_erichuowen_1d4e6140078dc26d7998fd725937eb76.png","btnWidth":10,"btnHeight":10,"x":194,"y":72},"activeId":"337"},{"view":"video","x":"30","y":"1760","width":"680","height":"409","vid":"","v_type":1,"custom":{"videoUrl":"https://h5.ssp.qq.com/lps/production/material/202104/172909_v_qypi_a012fe0ebe58e2b20c39b43debeb6a74.mp4_constraint_.mp4","videoType":"stream","videoId":"video1","preload":false,"videoCover":"https://h5.ssp.qq.com/lps/production/material/202104/172909_v_qypi_a012fe0ebe58e2b20c39b43debeb6a74.mp4_first_frame.jpg","exactVideoType":"portrait_long"},"subviews":[]},{"view":"topMask","x":0,"y":0,"width":720,"height":75,"custom":{"needRecommend":true,"recommendUrl":"http://n.ssp.qq.com?oid=1106?oid=1106?oid=1106?oid=1106"}},{"view":"bottomDownload","x":0,"y":200,"width":720,"height":75,"maskType":"1","custom":{"title":"立即下载","maskColor":"0xBB8A48","textColor":"0xff0000"}}],"viewTypes":["image","button","draw","video","topMask","bottomDownload"]}],"needTmast":false,"hasWarning":false},"pageName":"王者荣耀 | S23赛季上线领专属福利","pageDesc":"王者荣耀 | S23赛季上线领专属福利","customizedPageName":"4.14王者 S23"}
+        },
+        mounted: function() {
+            var _this = this;
+            window.getPageInfo = function() {
+                let pageInfo = {
+                    shareUrl: window.location.href || "http://n.ssp.qq.com?ishare=1",
+                    pageName: _this.data.pageName || 'BonBon游戏',
+                    pageDesc: _this.data.pageDesc || '快乐更快，易燃易Bon',
+                    shareIcon: _this.data.shareIcon || "http://h5.ssp.qq.com/news.png"
+                }
+                return JSON.stringify(pageInfo);
+            }
+            window.checked = _this.data.checked;
+        },
+    })
+</script>
+<!--<script type="text/javascript">-->
+<!--    window.appData = {"iosUrl":"https:\/\/itunes.apple.com\/cn\/app\/id989673964","isUseYYB":true,"gameId":3015,"YYBData":{"packageName":null,"channelId":"0002162647414d455f43454e5445525f4348414e4e454c5f3830303030303031335f3130303238353839"}};-->
+<!--    var script = document.createElement('script');-->
+<!--    script.type = 'text/javascript';-->
+<!--    var oid = getQueryString('oid');-->
+<!--    var locationId = getQueryString('locationId');-->
+<!--    window.loadDuration = new Date().getTime();-->
+<!--    script.src = "//c.ssp.qq.com/appgo?actid=1001&oid=" + oid + "&locationId=" + locationId + "&timestamp=" + window.loadDuration + "&pagetype=lander";-->
+<!--    document.getElementsByTagName('head')[0].appendChild(script);-->
+<!--</script>-->
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/tool/utils.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/20200422/wapwxlogin.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/20200422/wapqqlogin.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/20200422/adlogin.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/20200422/getBriefDetail.js"></script>
+<script src="//h5.ssp.qq.com/static/test/roleSelect.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/20200422/getGift.js"></script>
+<script src="//h5.ssp.qq.com/static/test/tasklottery.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/20200422/gameOrder.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/20200422/turntable.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/20210203/lottery.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/20200422/multiDownload.js"></script>
+<script src="//h5.ssp.qq.com/static/web/websites/landerMaker/ssp.ad.20200413.js"></script>
 </html>
