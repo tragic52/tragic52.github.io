@@ -44,15 +44,37 @@ function clearLocalStorage(){
 		inputSpan.style.display='';   /*显示姓名输入框和提交按钮*/
 }
 </script> 
+<script>
+/* 时间 */
+function time() {
+  t_div = document.getElementById('showtime');
+  var now = new Date()
+  setTimeout(time, 1000);
+  var dangqian = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() ;
+  t_div.innerHTML="已经勉强运行："+ DateDiff("2021-4-27",dangqian) +" 天";
+}
+/* 计算运行天数的封装函数 */
+function  DateDiff(sDate1,  sDate2){    //sDate1和sDate2是2002-12-18格式  
+  var  aDate,  oDate1,  oDate2,  iDays  
+  aDate  =  sDate1.split("-")  
+  oDate1  =  new  Date(aDate[1]  +  '-'  +  aDate[2]  +  '-'  +  aDate[0])    //转换为12-18-2002格式  
+  aDate  =  sDate2.split("-")  
+  oDate2  =  new  Date(aDate[1]  +  '-'  +  aDate[2]  +  '-'  +  aDate[0])  
+  iDays  =  parseInt(Math.abs(oDate1  -  oDate2)  /  1000  /  60  /  60  /24)    //把相差的毫秒数转换为天数  
+  return  iDays  
+}
+</script>
+
 </head>
-<body>
+<body onload="time()">
+<h2 id="showtime"></h2>
 <h1>欢迎来到逸舟个人网站</h1>
 <h3>经注册后，您的访问次数将会被记录。谢谢支持</h3><br/>
 <h3>有意建立GetHub个人网站的同学(这个是免费滴)，也可以咨询qq，有空就回<a href="https://user.qzone.qq.com/1687251332/infocenter">个人链接</a></h3>
 <h3><a href="https://pages.github.com/">方法链接（需要翻墙）</a></h3>
 <button id="btn_login">登录</button>
 <button id="btn_logout">注销</button> <br/>
-<img src="img/1.png" /><br/>
+<img src="img/1.jpg" /><br/>
 <span id="inputSpan">请输入您的id：<input type="text" id="inputname" value=""><button id="btn_send">提交</button></span><br/>
 <div id="show_LocalStorage"></div><br/>
 <br />
