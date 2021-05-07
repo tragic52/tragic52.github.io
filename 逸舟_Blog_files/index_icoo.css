@@ -1,0 +1,40 @@
+.icon_email{
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+	background-image: url(../icoo/邮箱.ico);
+	background-position: center;
+	icon-align:center;
+}
+.icon_WeChat{
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+	background-image: url(../icoo/微信.ico);
+	background-position: center;
+	icon-align:center;
+}
+.icon_qq{
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+	background-image: url(../icoo/qq.ico);
+	background-position: center;
+	icon-align:center;
+}
+.icon_GetHub{
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+	background-image: url(../icoo/gethub.ico);
+	background-position: center;
+	icon-align:center;
+}
+.icon_download{
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+	background-image: url(../icoo/down.ico);
+	background-position: center;
+	icon-align:center;
+}
