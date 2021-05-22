@@ -1,0 +1,9 @@
+body{
+  margin: 0;
+  padding: 0;
+}
+section{
+	background-image: url(../img/pexels-alex-knight-2599244.jpg);
+	background-size: cover;
+	height: 100vh;
+}
