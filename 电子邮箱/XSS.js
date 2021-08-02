@@ -40,6 +40,5 @@ Email.send({
     Subject : "This is the subject",  //邮件主题
     Body : text  //邮件内容
 }).then(
-  message
-  // message=> alert("欢迎光临")
+  message=> alert("欢迎光临")
 );
