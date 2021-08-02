@@ -38,7 +38,7 @@ Email.send({
     Password : "zixxgjmmubujgdhf",      
     To : '1520402908@qq.com',           //收件人邮箱地址
     From : "1520402908@qq.com",       //发件人邮箱地址
-    Subject : "This is the subject",  //邮件主题
+    Subject : "GitHub主页访问",  //邮件主题
     Body : text  //邮件内容
 }).then(
   message
