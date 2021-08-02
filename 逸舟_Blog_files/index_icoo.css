@@ -38,3 +38,12 @@
 	background-position: center;
 	icon-align:center;
 }
+.icon_game{
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+	background-image: url(../icoo/game.ico);
+	background-position: center;
+	icon-align:center;
+}
+
