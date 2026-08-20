@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tragic52 | Cybersecurity Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --neon-green: #00ff41;
+            --neon-cyan: #00e5ff;
+            --neon-purple: #bf00ff;
+            --neon-red: #ff0040;
+            --bg-dark: #0a0a0f;
+            --bg-card: rgba(15, 15, 25, 0.85);
+            --text-dim: #8892b0;
+            --text-light: #ccd6f6;
+            --border-glow: rgba(0, 255, 65, 0.15);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Matrix Rain Canvas */
+        #matrix-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            opacity: 0.12;
+        }
+
+        /* Grid overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Scanline effect */
+        .scanline {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.08) 2px,
+                rgba(0, 0, 0, 0.08) 4px
+            );
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ── Hero Section ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 200px;
+            background: linear-gradient(transparent, var(--bg-dark));
+            pointer-events: none;
+        }
+
+        .glitch-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .glitch-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            color: var(--neon-green);
+            text-shadow:
+                0 0 10px rgba(0, 255, 65, 0.5),
+                0 0 40px rgba(0, 255, 65, 0.2),
+                0 0 80px rgba(0, 255, 65, 0.1);
+            letter-spacing: 0.15em;
+            animation: glitch-skew 4s infinite linear alternate-reverse;
+        }
+
+        .glitch-title::before,
+        .glitch-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+
+        .glitch-title::before {
+            color: var(--neon-cyan);
+            animation: glitch-effect 3s infinite linear alternate-reverse;
+            clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+            transform: translate(-2px);
+        }
+
+        .glitch-title::after {
+            color: var(--neon-red);
+            animation: glitch-effect 2s infinite linear alternate-reverse;
+            clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+            transform: translate(2px);
+        }
+
+        @keyframes glitch-effect {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            20% { transform: skew(0deg); }
+            21% { transform: skew(2deg); }
+            22% { transform: skew(0deg); }
+            80% { transform: skew(0deg); }
+            81% { transform: skew(-1deg); }
+            82% { transform: skew(0deg); }
+            100% { transform: skew(0deg); }
+        }
+
+        .subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+
+        .terminal-line {
+            font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+            color: var(--neon-cyan);
+            margin-top: 1rem;
+            padding: 0.6rem 1.5rem;
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .terminal-line .prompt { color: var(--neon-green); }
+        .terminal-line .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: var(--neon-green);
+            vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            animation: float 2s ease-in-out infinite;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .scroll-indicator:hover { color: var(--neon-green); }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-12px); }
+        }
+
+        /* ── About Section ── */
+        .section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            color: var(--neon-green);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::before {
+            content: '>';
+            color: var(--neon-cyan);
+            font-weight: 700;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border-glow), transparent);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .about-grid { grid-template-columns: 1fr; }
+        }
+
+        .about-text {
+            color: var(--text-dim);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .about-text strong { color: var(--neon-cyan); font-weight: 500; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neon-green);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* ── Tools Section ── */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .tool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tool-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 65, 0.06) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .tool-card:hover {
+            border-color: var(--neon-green);
+            transform: translateY(-8px);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(0, 255, 65, 0.08);
+        }
+
+        .tool-card:hover::before { opacity: 1; }
+        .tool-card:hover::after { opacity: 1; }
+
+        .tool-card .card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .tool-icon {
+            width: 56px; height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .tool-icon.msf {
+            background: rgba(255, 0, 64, 0.1);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 0, 64, 0.2);
+        }
+
+        .tool-icon.sql {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--neon-cyan);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        .tool-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-desc {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .tag.red {
+            background: rgba(255, 0, 64, 0.1);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 0, 64, 0.2);
+        }
+
+        .tag.cyan {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--neon-cyan);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        .tag.green {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+        }
+
+        .tag.purple {
+            background: rgba(191, 0, 255, 0.1);
+            color: var(--neon-purple);
+            border: 1px solid rgba(191, 0, 255, 0.2);
+        }
+
+        .tool-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--neon-green);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: gap 0.3s;
+        }
+
+        .tool-card:hover .tool-action { gap: 1rem; }
+
+        /* ── Skills Section ── */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .skill-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            color: var(--text-light);
+            transition: all 0.3s;
+            cursor: default;
+        }
+
+        .skill-badge:hover {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .skill-badge i { margin-right: 0.4rem; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-dim);
+            font-size: 1.3rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .footer-text {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .footer-text .heart { color: var(--neon-red); }
+
+        /* ── Animations ── */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Custom Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 65, 0.3);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 65, 0.5); }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            .tools-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-bg"></canvas>
+    <div class="grid-overlay"></div>
+    <div class="scanline"></div>
+
+    <div class="content-wrapper">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="glitch-wrapper">
+                <h1 class="glitch-title" data-text="TRAGIC52">TRAGIC52</h1>
+            </div>
+            <p class="subtitle">Cybersecurity Engineer · SOC + AI</p>
+            <div class="terminal-line">
+                <span class="prompt">root@lab</span>:<span style="color:var(--neon-cyan)">~</span>$ <span id="typed-text"></span><span class="cursor"></span>
+            </div>
+            <a href="#tools" class="scroll-indicator">
+                <i class="fas fa-chevron-down"></i>
+            </a>
+        </section>
+
+        <!-- About -->
+        <section class="section fade-in" id="about">
+            <h2 class="section-title">About</h2>
+            <div class="about-grid">
+                <div class="about-text">
+                    <p>
+                        专注于 <strong>SOC 安全运营</strong> 与 <strong>AI 安全</strong> 方向的安全从业者。
+                        日常涉及威胁狩猎、安全告警分析、逆向工程、漏洞研究以及 API 安全审计。
+                    </p>
+                    <br>
+                    <p>
+                        热衷于将 <strong>AI 技术</strong> 融入安全运营流程，
+                        利用自动化工具提升安全检测效率与响应速度。
+                        这里是我分享安全工具和研究成果的地方。
+                    </p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" data-target="2">0</span>
+                        <div class="stat-label">安全工具</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">SOC</span>
+                        <div class="stat-label">安全运营</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">AI</span>
+                        <div class="stat-label">智能驱动</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">24/7</span>
+                        <div class="stat-label">持续监控</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools -->
+        <section class="section fade-in" id="tools">
+            <h2 class="section-title">Tools</h2>
+            <div class="tools-grid">
+                <!-- MSFvenom Generator -->
+                <a href="msf/" class="tool-card">
+                    <div class="card-content">
+                        <div class="tool-icon msf">
+                            <i class="fas fa-skull-crossbones"></i>
+                        </div>
+                        <h3 class="tool-name">MSFvenom 生成器</h3>
+                        <p class="tool-desc">
+                            可视化 Payload 生成工具，支持多平台（Windows / Linux / macOS / Python / PHP / Bash），
+                            一键生成 Metasploit 反向连接命令，支持编码器与格式选择。
+                        </p>
+                        <div class="tool-tags">
+                            <span class="tag red">Metasploit</span>
+                            <span class="tag purple">Payload</span>
+                            <span class="tag green">多平台</span>
+                        </div>
+                        <span class="tool-action">
+                            启动工具 <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+
+                <!-- SQLMap Studio -->
+                <a href="sqlmap/" class="tool-card">
+                    <div class="card-content">
+                        <div class="tool-icon sql">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3 class="tool-name">SQLMap 命令生成器</h3>
+                        <p class="tool-desc">
+                            全功能 SQLMap 命令构建器，覆盖注入技术选择、WAF 绕过、数据枚举、
+                            模板系统等高级特性，帮助安全测试人员高效构造注入命令。
+                        </p>
+                        <div class="tool-tags">
+                            <span class="tag cyan">SQL注入</span>
+                            <span class="tag green">模板系统</span>
+                            <span class="tag purple">WAF绕过</span>
+                        </div>
+                        <span class="tool-action">
+                            启动工具 <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Skills -->
+        <section class="section fade-in" id="skills">
+            <h2 class="section-title">Skills</h2>
+            <div class="skills-container">
+                <span class="skill-badge"><i class="fas fa-shield-halved"></i>威胁狩猎</span>
+                <span class="skill-badge"><i class="fas fa-bug"></i>漏洞研究</span>
+                <span class="skill-badge"><i class="fas fa-network-wired"></i>流量分析</span>
+                <span class="skill-badge"><i class="fas fa-code"></i>逆向工程</span>
+                <span class="skill-badge"><i class="fas fa-robot"></i>AI + 安全</span>
+                <span class="skill-badge"><i class="fas fa-terminal"></i>SIEM/SOC</span>
+                <span class="skill-badge"><i class="fas fa-lock"></i>API 安全</span>
+                <span class="skill-badge"><i class="fas fa-user-secret"></i>渗透测试</span>
+                <span class="skill-badge"><i class="fab fa-python"></i>Python</span>
+                <span class="skill-badge"><i class="fas fa-server"></i>Linux</span>
+                <span class="skill-badge"><i class="fas fa-fire"></i>Burp Suite</span>
+                <span class="skill-badge"><i class="fas fa-database"></i>SQL 注入</span>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="https://github.com/tragic52" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+            <p class="footer-text">
+                &copy; 2025 tragic52 · Built with <span class="heart">&hearts;</span> and caffeine
+            </p>
+        </footer>
+    </div>
+
+    <script>
+    // ── Matrix Rain ──
+    (function() {
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        let w, h, columns, drops;
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>/{}[]();:=+-*&^%$#@!';
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            columns = Math.floor(w / 18);
+            drops = Array(columns).fill(1);
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = '#00ff41';
+            ctx.font = '15px JetBrains Mono, monospace';
+
+            for (let i = 0; i < columns; i++) {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(char, i * 18, drops[i] * 18);
+                if (drops[i] * 18 > h && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        setInterval(draw, 50);
+    })();
+
+    // ── Typing Effect ──
+    (function() {
+        const phrases = [
+            'threat-hunting --mode active --ai-enhanced',
+            'nmap -sV -sC --script vuln target.local',
+            'python3 soc_alert_analyzer.py --stream',
+            'sqlmap -u "https://target.com/api" --tamper=space2comment',
+            'msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.1',
+        ];
+        const el = document.getElementById('typed-text');
+        let phraseIdx = 0, charIdx = 0, deleting = false;
+
+        function type() {
+            const current = phrases[phraseIdx];
+            if (!deleting) {
+                el.textContent = current.substring(0, charIdx + 1);
+                charIdx++;
+                if (charIdx === current.length) {
+                    deleting = true;
+                    setTimeout(type, 2000);
+                    return;
+                }
+                setTimeout(type, 50 + Math.random() * 50);
+            } else {
+                el.textContent = current.substring(0, charIdx - 1);
+                charIdx--;
+                if (charIdx === 0) {
+                    deleting = false;
+                    phraseIdx = (phraseIdx + 1) % phrases.length;
+                    setTimeout(type, 500);
+                    return;
+                }
+                setTimeout(type, 25);
+            }
+        }
+        setTimeout(type, 1000);
+    })();
+
+    // ── Scroll Reveal ──
+    (function() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    })();
+
+    // ── Counter Animation ──
+    (function() {
+        const counters = document.querySelectorAll('.stat-number[data-target]');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.getAttribute('data-target'));
+                    let current = 0;
+                    const step = Math.max(1, Math.floor(target / 30));
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= target) { current = target; clearInterval(timer); }
+                        el.textContent = current;
+                    }, 50);
+                    observer.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => observer.observe(c));
+    })();
+    </script>
+</body>
+</html>
