@@ -31,12 +31,85 @@
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Background Layers ── */
+        .bg-blobs {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.35;
+            animation: drift 20s ease-in-out infinite alternate;
+        }
+
+        .blob-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(100, 255, 218, 0.25), transparent 70%);
+            top: -10%; left: -8%;
+            animation-duration: 22s;
+        }
+
+        .blob-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.2), transparent 70%);
+            top: 40%; right: -12%;
+            animation-duration: 26s;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 450px; height: 450px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.18), transparent 70%);
+            bottom: -5%; left: 20%;
+            animation-duration: 24s;
+            animation-delay: -10s;
+        }
+
+        @keyframes drift {
+            0%   { transform: translate(0, 0) scale(1); }
+            33%  { transform: translate(40px, -30px) scale(1.05); }
+            66%  { transform: translate(-20px, 20px) scale(0.97); }
+            100% { transform: translate(30px, -10px) scale(1.03); }
+        }
+
+        .bg-dots {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(100, 255, 218, 0.06) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .bg-noise {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 256px 256px;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
             padding: 0 2rem;
+            position: relative;
+            z-index: 1;
         }
 
         /* ── Hero ── */
@@ -75,7 +148,9 @@
             margin-top: 2rem;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
-            background: var(--bg-card);
+            background: rgba(17, 27, 46, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 0.8rem 1.2rem;
@@ -138,7 +213,9 @@
         }
 
         .tool-card {
-            background: var(--bg-card);
+            background: rgba(17, 27, 46, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 1.75rem;
@@ -149,7 +226,7 @@
         }
 
         .tool-card:hover {
-            background: var(--bg-card-hover);
+            background: rgba(22, 32, 54, 0.75);
             border-color: var(--border-hover);
             transform: translateY(-4px);
         }
@@ -279,6 +356,15 @@
     </style>
 </head>
 <body>
+    <!-- Background layers -->
+    <div class="bg-blobs" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    <div class="bg-dots" aria-hidden="true"></div>
+    <div class="bg-noise" aria-hidden="true"></div>
+
     <div class="container">
         <!-- Hero -->
         <section class="hero">
